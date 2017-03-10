@@ -1,0 +1,40 @@
+require_relative './order'
+
+module Diplomacy
+  class WaiveOrder < Order
+    # --- Class ------------------------------
+
+    REGEXP = /^(?:w|waive)$/
+
+    def initialize(power)
+      super(power.turn)
+      @power = power
+    end
+
+    def self.parse(power, match_data, mine=true)
+      self.new(power)
+    end
+
+    # --- Queries ----------------------------
+
+    attr_reader :power
+
+    def string
+      "#{power.definition.name} WAIVE"
+    end
+
+    def text
+      "WAIVE"
+    end
+
+    # --- Commands ---------------------------
+
+    def validate
+      # Nothing to do
+    end
+
+    def execute(next_turn)
+      # Also nothing to do
+    end
+  end
+end

@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<map types="a,f">
+	<start year="1901" season="Spring"/>
+	<power name="England" adjectives="English,British" colours="#9999ff,#0000ff">
+		<province id="Cly" name="Clyde">
+			<area type="a" connections="edi lvp" pos="133,145"/>
+			<area type="f" connections="nao lvp edi nwg" pos="133,145"/>
+		</province>
+		<province id="Edi" name="Edinborough">
+			<supply pos="145,165"/>
+			<piece type="f"/>
+			<area type="a" connections="cly lvp yor" pos="146,148"/>
+			<area type="f" connections="nwg nth cly yor" pos="146,148"/>
+		</province>
+		<province id="Lvp" name="Liverpool">
+			<supply pos="137,176"/>
+			<piece type="a"/>
+			<area type="a" connections="cly edi yor wal" pos="137,176"/>
+			<area type="f" connections="nao iri cly wal" pos="137,176"/>
+		</province>
+		<province id="Yor" name="Yorkshire">
+			<area type="a" connections="edi lvp wal lon" pos="152,187"/>
+			<area type="f" connections="nth edi lon" pos="152,187"/>
+		</province>
+		<province id="Wal" name="Wales">
+			<area type="a" connections="lvp yor lon" pos="131,199"/>
+			<area type="f" connections="iri eng lvp lon" pos="131,199"/>
+		</province>
+		<province id="Lon" name="London" piece="a">
+			<supply pos="147,213"/>
+			<piece type="f"/>
+			<area type="a" connections="wal yor" pos="154,204"/>
+			<area type="f" connections="eng nth yor wal" pos="154,204"/>
+		</province>
+	</power>
+	<power name="France" adjectives="French" colours="#80e5ce,#40d9d4">
+		<province id="Bre" name="Brest">
+			<supply pos="113,236"/>
+			<piece type="f"/>
+			<area type="a" connections="gas pic par" pos="128,247"/>
+			<area type="f" connections="mao eng gas pic" pos="122,242"/>
+		</province>
+		<province id="Pic" name="Picardy">
+			<area type="a" connections="bre bel par bur" pos="154,234"/>
+			<area type="f" connections="eng bre bel" pos="154,234"/>
+		</province>
+		<province id="Par" name="Paris">
+			<supply pos="148,250"/>
+			<piece type="a"/>
+			<area type="a" connections="bre pic bur gas" pos="148,250"/>
+		</province>
+		<province id="Gas" name="Gascony">
+			<area type="a" connections="bre par bur mar spa" pos="134,282"/>
+			<area type="f" connections="mao bre spanc" pos="125,278"/>
+		</province>
+		<province id="Mar" name="Marseilles">
+			<supply pos="170,301"/>
+			<piece type="a"/>
+			<area type="a" connections="gas bur pie spa" pos="170,288"/>
+			<area type="f" connections="lyo spasc pie" pos="157,295"/>
+		</province>
+		<province id="Bur" name="Burgundy">
+			<area type="a" connections="gas par pic bel ruh mun mar" pos="169,261"/>
+		</province>
+	</power>
+	<power name="Germany" adjectives="German" colours="#999999,#666666">
+		<province id="Ber" name="Berlin">
+			<supply pos="235,218"/>
+			<piece type="a"/>
+			<area type="a" connections="kie pru sil mun" pos="234,205"/>
+			<area type="f" connections="bal kie pru" pos="234,205"/>
+		</province>
+		<province id="Pru" name="Prussia">
+			<area type="a" connections="ber lvn war sil" pos="268,206"/>
+			<area type="f" connections="bal ber lvn" pos="268,206"/>
+		</province>
+		<province id="Sil" name="Silesia">
+			<area type="a" connections="mun ber pru war gal boh" pos="254,230"/>
+		</province>
+		<province id="Mun" name="Munich">
+			<piece type="a"/>
+			<supply pos="217,257"/>
+			<area type="a" connections="bur ruh kie ber sil boh tyl" pos="210,245"/>
+		</province>
+		<province id="Ruh" name="Ruhr">
+			<area type="a" connections="bur bel hol kie mun" pos="194,234"/>
+		</province>
+		<province id="Kie" name="Kiel">
+			<supply pos="215,205"/>
+			<piece type="f"/>
+			<area type="a" connections="ruh hol den ber mun" pos="209,217 213,192"/>
+			<area type="f" connections="hel bal den hol ber" pos="210,207"/>
+		</province>
+	</power>
+	<power name="Italy" adjectives="Italian" colours="#98ff99,#00d900">
+		<province id="Ven" name="Venice">
+			<supply pos="215,294"/>
+			<piece type="a"/>
+			<area type="a" connections="tus pie tri tyl apu rom" pos="215,294"/>
+			<area type="f" connections="adr tri apu" pos="215,294"/>
+		</province>
+		<province id="Pie" name="Piedmont">
+			<area type="a" connections="mar tyl ven tus" pos="191,289"/>
+			<area type="f" connections="lyo mar tus" pos="191,289"/>
+		</province>
+		<province id="Tus" name="Tuscany">
+			<area type="a" connections="pie ven rom" pos="206,311"/>
+			<area type="f" connections="lyo tys pie rom" pos="206,311"/>
+		</province>
+		<province id="Rom" name="Rome">
+			<supply pos="218,323"/>
+			<piece type="a"/>
+			<area type="a" connections="tus ven apu nap" pos="220,330"/>
+			<area type="f" connections="tys tus nap" pos="220,330"/>
+		</province>
+		<province id="Apu" name="Apulia">
+			<area type="a" connections="nap rom ven" pos="246,335"/>
+			<area type="f" connections="adr ion nap ven" pos="246,335"/>
+		</province>
+		<province id="Nap" name="Naples">
+			<supply pos="235,338"/>
+			<piece type="f"/>
+			<area type="a" connections="rom apu" pos="244,348"/>
+			<area type="f" connections="tys ion rom apu" pos="244,348"/>
+		</province>
+	</power>
+	<power name="Austria-Hungary" adjectives="Austrian,Hungarian,Austro-Hungarian" colours="#ff9898,#ff0000">
+		<province id="Tri" name="Trieste">
+			<supply pos="240,288"/>
+			<piece type="f"/>
+			<area type="a" connections="ven tyl vie bud ser alb" pos="252,298"/>
+			<area type="f" connections="ven adr alb" pos="246,299"/>
+		</province>
+		<province id="Bud" name="Budapest">
+			<supply pos="271,272"/>
+			<piece type="a"/>
+			<area type="a" connections="tri vie gal rum ser" pos="287,277"/>
+		</province>
+		<province id="Gal" name="Galacia">
+			<area type="a" connections="vie boh sil war ukr rum bud" pos="305,249"/>
+		</province>
+		<province id="Vie" name="Vienna">
+			<supply pos="249,264"/>
+			<piece type="a"/>
+			<area type="a" connections="tyl boh gal bud tri" pos="259,261"/>
+		</province>
+		<province id="Boh" name="Bohemia">
+			<area type="a" connections="mun sil gal vie tyl" pos="244,244"/>
+		</province>
+		<province id="Tyl" name="Tyrolia">
+			<area type="a" connections="mun boh vie tri ven pie" pos="225,272"/>
+		</province>
+	</power>
+	<power name="Russia" adjectives="Russian" colours="#e5e5e5,#ffffff">
+		<province id="Fin" name="Finland">
+			<area type="a" connections="nor swe stp" pos="307,115"/>
+			<area type="f" connections="bot swe stpsc" pos="294,128"/>
+		</province>
+		<province id="StP" name="St. Petersburg">
+			<supply pos="336,140"/>
+			<piece type="f" area="sc"/>
+			<area type="a" connections="fin nor lvn mos" pos="350,138"/>
+			<area type="f" id="nc" name="North Coast" connections="bar nor" pos="340,50"/>
+			<area type="f" id="sc" name="South Coast" connections="bot fin lvn" pos="327,146"/>
+		</province>
+		<province id="Mos" name="Moscow">
+			<supply pos="381,176"/>
+			<piece type="a"/>
+			<area type="a" connections="lvn stp sev ukr war" pos="365,185"/>
+		</province>
+		<province id="Sev" name="Sevastopol">
+			<supply pos="388,254"/>
+			<piece type="f"/>
+			<area type="a" connections="rum ukr mos arm" pos="388,254"/>
+			<area type="f" connections="bla rum arm" pos="388,254"/>
+		</province>
+		<province id="Ukr" name="Ukraine">
+			<area type="a" connections="rum gal war mos sev" pos="340,240"/>
+		</province>
+		<province id="War" name="Warsaw">
+			<supply pos="286,221"/>
+			<piece type="a"/>
+			<area type="a" connections="sil pru lvn mos ukr gal" pos="286,221"/>
+		</province>
+		<province id="Lvn" name="Livonia">
+			<area type="a" connections="war pru stp mos" pos="310,180"/>
+			<area type="f" connections="bal bot pru stpsc" pos="292,174"/>
+		</province>
+	</power>
+	<power name="Turkey" adjectives="Turkish" colours="#feffb2,#d8d900">
+		<province id="Arm" name="Armenia">
+			<area type="a" connections="smy ank sev syr" pos="475,333"/>
+			<area type="f" connections="bla ank sev" pos="443,318"/>
+		</province>
+		<province id="Ank" name="Ankara">
+			<supply pos="385,338"/>
+			<piece type="f"/>
+			<area type="a" connections="con smy arm" pos="400,326"/>
+			<area type="f" connections="bla con arm" pos="400,323"/>
+		</province>
+		<province id="Smy" name="Smyrna">
+			<supply pos="340,360"/>
+			<piece type="a"/>
+			<area type="a" connections="con ank arm syr" pos="385,362"/>
+			<area type="f" connections="aeg eas con syr" pos="348,368"/>
+		</province>
+		<province id="Syr" name="Syria">
+			<area type="a" connections="smy arm" pos="430,365"/>
+			<area type="f" connections="eas smy" pos="422,387"/>
+		</province>
+		<province id="Con" name="Constantinople">
+			<supply pos="340,331"/>
+			<piece type="a"/>
+			<area type="a" connections="bul ank smy" pos="364,341 336,332"/>
+			<area type="f" connections="bla aeg bulec bulsc smy ank" pos="344,338"/>
+		</province>
+	</power>
+	<uncontrolled colours="#ffe1b2,#ff9400">
+		<!-- SEAS ("f") -->
+		<province id="NAO" name="North Atlantic Ocean">
+			<area type="f" connections="mao iri cly lvp nwg" pos="65,100"/>
+		</province>
+		<province id="Nwg" name="Norwegian Sea">
+			<area type="f" connections="nao cly edi nth nor bar" pos="200,50"/>
+		</province>
+		<province id="Iri" name="Irish Sea">
+			<area type="f" connections="mao nao eng wal lvp" pos="95,205"/>
+		</province>
+		<province id="MAO" name="Mid-Atlantic Ocean">
+			<area type="f" connections="nao spanc spasc por wes gas bre eng iri naf" pos="50,250"/>
+		</province>
+		<province id="Eng" name="English Channel">
+			<graphics paint="124,223"/>
+			<area type="f" connections="mao iri bre wal lon pic bel nth" pos="124,223"/>
+		</province>
+		<province id="Wes" name="Western Mediterranean">
+			<area type="f" connections="mao spasc naf lyo tys tun" pos="130,355"/>
+		</province>
+		<province id="Lyo" name="Gulf of Lyon">
+			<area type="f" connections="wes spasc mar pie tus tys" pos="160,320"/>
+		</province>
+		<province id="TyS" name="Tyrrhenian Sea">
+			<graphics paint="215,350"/>
+			<area type="f" connections="wes lyo tus rom nap ion tun" pos="215,350"/>
+		</province>
+		<province id="Ion" name="Ionian Sea">
+			<area type="f" connections="tys nap apu adr alb gre aeg eas tun" pos="255,385"/>
+		</province>
+		<province id="Adr" name="Adriatic Sea">
+			<graphics paint="250,320"/>
+			<area type="f" connections="apu ven tri alb ion" pos="250,320"/>
+		</province>
+		<province id="Aeg" name="Aegean Sea">
+			<area type="f" connections="ion gre bulsc con smy eas" pos="325,375"/>
+		</province>
+		<province id="Eas" name="East Mediterranean">
+			<area type="f" connections="ion aeg smy syr" pos="360,390"/>
+		</province>
+		<province id="Bla" name="Black Sea">
+			<area type="f" connections="bulec rum sev arm ank con" pos="380,305"/>
+		</province>
+		<province id="Nth" name="North Sea">
+			<area type="f" connections="eng lon yor edi nwg nor ska den hel hol bel" pos="175,160"/>
+		</province>
+		<province id="Hel" name="Helgoa Bight">
+			<area type="f" connections="nth den bal kie hol" pos="198,190 220,193"/>
+		</province>
+		<province id="Ska" name="Skagerrak">
+			<area type="f" connections="nth nor swe den" pos="220,158"/>
+		</province>
+		<province id="Bal" name="Baltic Sea">
+			<area type="f" connections="hel den swe bot lvn pru ber kie" pos="270,180"/>
+		</province>
+		<province id="Bot" name="Gulf of Bothnia">
+			<area type="f" connections="swe fin stpsc lvn bal" pos="285,145"/>
+		</province>
+		<province id="Bar" name="Barents Sea">
+			<area type="f" connections="nwg nor stpnc" pos="350,20"/>
+		</province>
+
+		<!-- LAND ("a" ["f"]) -->
+		<province id="Hol" name="Holland">
+			<supply pos="186,210"/>
+			<area type="a" connections="bel ruh kie" pos="186,210"/>
+			<area type="f" connections="nth hel bel kie" pos="186,210"/>
+		</province>
+		<province id="Bel" name="Belgium">
+			<supply pos="172,227"/>
+			<area type="a" connections="pic hol ruh bur" pos="172,227"/>
+			<area type="f" connections="eng nth pic hol" pos="172,227"/>
+		</province>
+		<province id="Bul" name="Bulgaria">
+			<supply pos="305,320"/>
+			<area type="a" connections="gre ser rum con" pos="318,320"/>
+			<area type="f" id="ec" name="East Coast" connections="bla rum con" pos="332,314"/>
+			<area type="f" id="sc" name="South Coast" connections="aeg gre con" pos="322,332"/>
+		</province>
+		<province id="Rum" name="Rumania">
+			<supply pos="323,301"/>
+			<area type="a" connections="ser bud gal ukr sev bul" pos="331,290"/>
+			<area type="f" connections="bla sev bulec" pos="338,296"/>
+		</province>
+		<province id="Ser" name="Serbia">
+			<supply pos="281,304"/>
+			<area type="a" connections="alb tri bud rum bul gre" pos="286,312"/>
+		</province>
+		<province id="Alb" name="Albania">
+			<area type="a" connections="tri ser gre" pos="279,337"/>
+			<area type="f" connections="adr ion tri gre" pos="279,337"/>
+		</province>
+		<province id="Gre" name="Greece">
+			<supply pos="307,367"/>
+			<area type="a" connections="alb ser bul" pos="293,353 311,363"/>
+			<area type="f" connections="ion aeg alb bulsc" pos="293,353"/>
+		</province>
+		<province id="Spa" name="Spain">
+			<supply pos="94,312"/>
+			<area type="a" connections="por gas mar" pos="105,310"/>
+			<area type="f" id="nc" name="North Coast" connections="mao por gas" pos="90,289"/>
+			<area type="f" id="sc" name="South Coast" connections="mao wes lyo por mar" pos="86,345"/>
+		</province>
+		<province id="Por" name="Portugal">
+			<supply pos="44,316"/>
+			<area type="a" connections="spa" pos="54,307"/>
+			<area type="f" connections="mao spanc spasc" pos="54,307"/>
+		</province>
+		<province id="NAf" name="North Africa">
+			<area type="a" connections="tun" pos="95,385"/>
+			<area type="f" connections="mao wes tun" pos="120,375"/>
+		</province>
+		<province id="Tun" name="Tunis">
+			<supply pos="190,382"/>
+			<area type="a" connections="naf" pos="190,382"/>
+			<area type="f" connections="wes tys ion naf" pos="190,382"/>
+		</province>
+		<province id="Den" name="Denmark">
+			<supply pos="229,185"/>
+			<area type="a" connections="kie swe" pos="215,174 217,177 225,192"/>
+			<area type="f" connections="hel nth ska swe bal kie" pos="215,174"/>
+		</province>
+		<province id="Nor" name="Norway">
+			<supply pos="227,137"/>
+			<area type="a" connections="swe fin stp" pos="220,125"/>
+			<area type="f" connections="nwg nth ska bar swe stpnc" pos="210,128"/>
+		</province>
+		<province id="Swe" name="Sweden">
+			<supply pos="266,144"/>
+			<area type="a" connections="nor fin den" pos="251,143"/>
+			<area type="f" connections="ska den bal bot nor fin" pos="250,168"/>
+		</province>
+	</uncontrolled>
+</map>

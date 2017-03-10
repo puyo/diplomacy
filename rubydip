@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << __dir__ << File.join(__dir__, 'lib')
+
+require 'diplomacy/diplomacy'
+require 'ui/app'
+require 'ui/choosepower'
+require 'ftools'
+
+GUI.setGlobalStyle(:text, GUI.rgb(0x008000)) # green
+GUI.setGlobalStyle(:background, GUI.rgb(0xe0e0d0)) # biege
+GUI.setStyle(GUI::CheckButton, :foreground, GUI::WHITE)
+GUI.setStyle(GUI::Text, :foreground, GUI::WHITE)
+
+puts 'Starting game...'
+
+resultsdir = File.join(dir, 'results')
+Dir.mkdir(resultsdir) unless FileTest.directory?(resultsdir)
+results = Dir.glob(File.join(resultsdir, "survey*"))
+game = Diplomacy::Game.new("survey#{results.size.to_s}", "standard")
+
+turnmappath = game.turn_images_path
+if FileTest.directory?(turnmappath)
+	Dir.glob(File.join(turnmappath, "*")).each do |f|
+		File.delete(f)
+	end
+end
+
+
+puts 'Starting application...'
+
+DiplomacyApp.new(game)
