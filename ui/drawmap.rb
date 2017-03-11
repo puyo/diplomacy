@@ -1,9 +1,9 @@
 # Extensions to the Diplomacy model used to represent it.
 
-require_relative './game'
-require_relative './order'
-require_relative './moveorder'
-require_relative './supportorder'
+require_relative '../lib/diplomacy/game'
+require_relative '../lib/diplomacy/order'
+require_relative '../lib/diplomacy/moveorder'
+require_relative '../lib/diplomacy/supportorder'
 require 'GD'
 
 class Diplomacy::Province
