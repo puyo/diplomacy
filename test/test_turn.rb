@@ -6,9 +6,8 @@ class TurnTest < Test::Unit::TestCase
   include Diplomacy
 
   def setup
-    @game = Game.new("test", "standard")
+    @game = Game.new(name: 'test')
     @game.start(false, false)
-    @map = @game.map
     Util.log "----------------------------------------------------------"
     Util.log "----------------------------------------------------------"
     Util.log "----------------------------------------------------------"
@@ -18,15 +17,19 @@ class TurnTest < Test::Unit::TestCase
     Util.log "----------------------------------------------------------"
   end
 
-  attr_reader :game, :map
+  attr_reader :game
 
-  def austria; turn.power(@map.power_definition("a")) end
-  def england; turn.power(@map.power_definition("e")) end
-  def france; turn.power(@map.power_definition("f")) end
-  def germany; turn.power(@map.power_definition("g")) end
-  def italy; turn.power(@map.power_definition("i")) end
-  def russia; turn.power(@map.power_definition("r")) end
-  def turkey; turn.power(@map.power_definition("t")) end
+  def map
+    @game.map
+  end
+
+  def austria; turn.power(map.power_definition("a")) end
+  def england; turn.power(map.power_definition("e")) end
+  def france; turn.power(map.power_definition("f")) end
+  def germany; turn.power(map.power_definition("g")) end
+  def italy; turn.power(map.power_definition("i")) end
+  def russia; turn.power(map.power_definition("r")) end
+  def turkey; turn.power(map.power_definition("t")) end
 
   def turn
     @game.turn

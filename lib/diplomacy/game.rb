@@ -15,13 +15,12 @@ module Diplomacy
     @@nice_mode = true
     @@director_mode = true
 
-    # Create a game.
-    def initialize(name, map_name, resource_path=nil)
+    # Create a game
+    def initialize(name:, map: Map.new)
       @name = name
-      @map = Map.new(map_name, resource_path)
+      @map = map
       @piece_icon_id = @supply_icon_id = @map.id
       @director = nil
-
       @turns = []
     end
 

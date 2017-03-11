@@ -1,3 +1,4 @@
+require_relative '../../lib/diplomacy/map'
 require_relative '../../lib/diplomacy/game'
 require_relative '../drawmap'
 require 'test/unit'
@@ -5,14 +6,9 @@ require 'test/unit'
 class DrawTest < Test::Unit::TestCase
   include Diplomacy
 
-  def reset
-    @game = Game.new("test", "standard")
-    @game.start(false, false)
-    @map = @game.map
-  end
-
   def setup
-    reset
+    @game = Game.new(name: 'test')
+    @game.start(false, false)
     Util.log "----------------------------------------------------------"
     Util.log "----------------------------------------------------------"
     Util.log "----------------------------------------------------------"
@@ -24,13 +20,17 @@ class DrawTest < Test::Unit::TestCase
 
   attr_reader :game, :map
 
-  def austria; turn.power(@map.power_definition("a")) end
-  def england; turn.power(@map.power_definition("e")) end
-  def france; turn.power(@map.power_definition("f")) end
-  def germany; turn.power(@map.power_definition("g")) end
-  def italy; turn.power(@map.power_definition("i")) end
-  def russia; turn.power(@map.power_definition("r")) end
-  def turkey; turn.power(@map.power_definition("t")) end
+  def austria; turn.power(map.power_definition("a")) end
+  def england; turn.power(map.power_definition("e")) end
+  def france; turn.power(map.power_definition("f")) end
+  def germany; turn.power(map.power_definition("g")) end
+  def italy; turn.power(map.power_definition("i")) end
+  def russia; turn.power(map.power_definition("r")) end
+  def turkey; turn.power(map.power_definition("t")) end
+
+  def map
+    @game.map
+  end
 
   def turn
     @game.turn

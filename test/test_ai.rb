@@ -6,8 +6,7 @@ class AITest < Test::Unit::TestCase
   include Diplomacy
 
   def setup
-    @game = Game.new('test', 'standard')
-    @map = @game.map
+    @game = Game.new(name: 'test')
     Util.log '----------------------------------------------------------'
     Util.log '----------------------------------------------------------'
     Util.log '----------------------------------------------------------'
@@ -17,7 +16,11 @@ class AITest < Test::Unit::TestCase
     Util.log '----------------------------------------------------------'
   end
 
-  attr_reader :game, :map
+  attr_reader :game
+
+  def map
+    @game.map
+  end
 
   def turn
     @game.turn

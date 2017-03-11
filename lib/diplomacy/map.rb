@@ -19,7 +19,7 @@ module Diplomacy
     # its associated files, or if it is already loaded, simply
     # return it (maps are cached because they often take some time
     # to load).
-    def initialize(id="standard", resource_path=nil)
+    def initialize(id: 'standard', resource_path: nil)
       @id = id
       @resource_path = resource_path || File.join(__dir__, "..", "..", "resources")
 
