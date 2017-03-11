@@ -1,6 +1,7 @@
 require_relative './game'
 require_relative './turn'
 require_relative './common'
+require 'fileutils'
 
 module Diplomacy
   # Class for an object dedicated to monitoring a human player.
@@ -25,9 +26,8 @@ module Diplomacy
 
       ailog "Director: Started for player #{human_nationality}..."
 
-
-      `rm enmities-#{@game.name}-*.txt`
-      `rm size-#{@game.name}.txt`
+      FileUtils.rm_f "enmities-#{@game.name}-*.txt"
+      FileUtils.rm_f "size-#{@game.name}.txt"
 
       init_relationships(@enmity = {})
       @enmity.each do |from, enmities|
