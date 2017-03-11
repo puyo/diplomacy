@@ -1,4 +1,4 @@
-require_relative './pieceorder'
+require_relative './piece_order'
 
 module Diplomacy
   class MoveOrder < PieceOrder
@@ -145,4 +145,4 @@ module Diplomacy
   end
 end
 
-require_relative './convoyedmoveorder'
+require_relative './convoyed_move_order'

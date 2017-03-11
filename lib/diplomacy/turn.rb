@@ -411,6 +411,6 @@ module Diplomacy
   end
 end
 
-require_relative './movementturn'
-require_relative './adjustmentturn'
-require_relative './retreatturn'
+require_relative './movement_turn'
+require_relative './adjustment_turn'
+require_relative './retreat_turn'

@@ -95,4 +95,4 @@ module Diplomacy
   end
 end
 
-require_relative './pieceorder'
+require_relative './piece_order'

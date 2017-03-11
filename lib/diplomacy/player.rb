@@ -20,5 +20,5 @@ module Diplomacy
   end
 end
 
-require_relative './dopeybot'
-require_relative './holdbot'
+require_relative './dopey_bot'
+require_relative './hold_bot'

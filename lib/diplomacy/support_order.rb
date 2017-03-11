@@ -1,4 +1,4 @@
-require_relative './pieceorder'
+require_relative './piece_order'
 
 module Diplomacy
   class SupportOrder < PieceOrder

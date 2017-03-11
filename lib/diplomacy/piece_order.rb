@@ -39,7 +39,7 @@ module Diplomacy
   end
 end
 
-require_relative './moveorder'
-require_relative './holdorder'
-require_relative './supportorder'
-require_relative './convoyorder'
+require_relative './move_order'
+require_relative './hold_order'
+require_relative './support_order'
+require_relative './convoy_order'

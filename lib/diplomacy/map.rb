@@ -4,7 +4,7 @@ require_relative './power'
 require_relative './piece'
 require_relative './province'
 require_relative './error'
-require_relative './turnpower'
+require_relative './turn_power'
 require_relative './turn'
 
 module Diplomacy

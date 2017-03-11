@@ -1,4 +1,4 @@
-require_relative './moveorder'
+require_relative './move_order'
 
 module Diplomacy
   class ConvoyedMoveOrder < MoveOrder

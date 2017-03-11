@@ -1,5 +1,5 @@
 require_relative './turn'
-require_relative './retreatorder'
+require_relative './retreat_order'
 require 'pp'
 
 module Diplomacy

@@ -1,7 +1,7 @@
 require_relative './turn'
-require_relative './buildorder'
-require_relative './waiveorder'
-require_relative './disbandorder'
+require_relative './build_order'
+require_relative './waive_order'
+require_relative './disband_order'
 
 module Diplomacy
   class AdjustmentTurn < Turn
