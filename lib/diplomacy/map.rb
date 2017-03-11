@@ -40,7 +40,7 @@ module Diplomacy
       @types = doc.elements["/map"].attribute("types").to_s.split(/,/)
       start = doc.elements["/map/start"]
       @first_year = start.attribute("year", "1901").to_s.to_i
-      @first_season = Diplomacy::TURN_TYPES.fetch(start.attribute('season').to_s, Spring)
+      @first_season = Diplomacy::MovementTurn.from_string(start.attribute('season').to_s, Spring)
 
       @first_turn = @first_season.new(self)
 

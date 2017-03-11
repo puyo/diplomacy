@@ -7,6 +7,13 @@ module Diplomacy
 
     ORDER_TYPES = [ConvoyOrder, SupportOrder, HoldOrder, MoveOrder, ConvoyedMoveOrder]
 
+    def self.from_string(str, default = Spring)
+      {
+        'Spring' => Spring,
+        'Autumn' => Autumn,
+      }.fetch(str, default)
+    end
+
     def initialize(map, prevturn=nil)
       super(map, prevturn)
     end
@@ -127,8 +134,4 @@ module Diplomacy
     def next_year; @year + 1 end
   end
 
-  TURN_TYPES = {
-    'Spring' => Spring,
-    'Autumn' => Autumn,
-  }
 end
