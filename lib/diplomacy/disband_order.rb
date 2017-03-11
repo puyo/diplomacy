@@ -34,7 +34,7 @@ module Diplomacy
     end
 
     def execute(next_turn)
-      log "#{piece}: Executing order..."
+      Util.log "#{piece}: Executing order..."
       next_turn.remove_piece(piece)
     end
   end

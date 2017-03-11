@@ -33,10 +33,10 @@ module Diplomacy
 
     def execute(next_turn)
       if successful?
-        log "#{piece}: Retreating to #{destination}..."
+        Util.log "#{piece}: Retreating to #{destination}..."
         next_turn.copy_piece_to(piece, destination)
       else
-        log "#{piece}: Not adding piece to next turn..."
+        Util.log "#{piece}: Not adding piece to next turn..."
         # Do not add piece to next turn.
       end
     end
@@ -51,11 +51,11 @@ module Diplomacy
 
     def validate
       if unreachable?
-        log "Piece #{@piece} cannot retreat to #{@destination} because that is impossible"
+        Util.log "Piece #{@piece} cannot retreat to #{@destination} because that is impossible"
         add_result(IMPOSSIBLE)
       end
       if cannot_retreat_there?
-        log "Piece #{@piece} cannot retreat to #{@destination}"
+        Util.log "Piece #{@piece} cannot retreat to #{@destination}"
         add_result(IMPOSSIBLE)
       end
     end

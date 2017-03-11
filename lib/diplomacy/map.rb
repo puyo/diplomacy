@@ -6,6 +6,7 @@ require_relative './province'
 require_relative './error'
 require_relative './turn_power'
 require_relative './turn'
+require_relative './util'
 
 module Diplomacy
 
@@ -22,7 +23,7 @@ module Diplomacy
       @id = id
       @resource_path = resource_path || File.join(__dir__, "..", "..", "resources")
 
-      log "Loading map from #{configuration_path}..."
+      Util.log "Loading map from #{configuration_path}..."
       doc = nil
       begin
         File.open(configuration_path) do |f|
@@ -111,7 +112,7 @@ module Diplomacy
       rest = parts.join(' ').strip
       if result = @provinces[rest[0,3]]
         rest[0,3] = ''
-      elsif result = provinces.partial_match(rest){|p| p.name.downcase }
+      elsif result = Util.partial_match(provinces, rest) { |p| p.name.downcase }
         rest[0,result.name.size] = ''
       else
         raise Error, "Unable to determine province from '#{text}'"
@@ -146,9 +147,9 @@ module Diplomacy
         return areas.first
       elsif area_text != ''
         area_text = area_text.strip.gsub(/[^a-z ]/, '')
-        if area = province.areas.partial_match(area_text){|a| a.key }
+        if area = Util.partial_match(province.areas, area_text){|a| a.key }
           return area
-        elsif area_text != '' and area = province.areas.partial_match(area_text){|a| a.name }
+        elsif area_text != '' and area = Util.partial_match(province.areas, area_text){|a| a.name }
           return area
         end
       end
@@ -166,7 +167,7 @@ module Diplomacy
     end
 
     def power_definition(id)
-      @power_definitions.partial_match(id){|pdef| pdef.name.downcase }
+      Util.partial_match(@power_definitions, id) { |pdef| pdef.name.downcase }
     end
 
     # A list of all provinces.

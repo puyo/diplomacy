@@ -250,14 +250,14 @@ class Diplomacy::Game
 
   def loadPNG(path)
     File.open(path, 'rb') do |f|
-      log "Reading '#{path}'..."
+      Util.log "Reading '#{path}'..."
       return GD::Image.newFromPng(f)
     end
   end
 
   def savePNG(image, path)
     File.open(path, "wb") do |f|
-      log "Writing '#{path}'..."
+      Util.log "Writing '#{path}'..."
       image.png(f)
     end
   end

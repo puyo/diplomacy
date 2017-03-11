@@ -1,4 +1,4 @@
-require_relative './common'
+require_relative './util'
 
 module Diplomacy
   # Game state.
@@ -8,7 +8,7 @@ module Diplomacy
     def initialize(map, prevturn=nil)
       @game = nil
       @map = map
-      @contenders = {}
+      @contenders = Hash.new { |h, k| h[k] = [] }
       @pieces = {}
       @pieces_dislodged = {}
       if prevturn
@@ -37,7 +37,7 @@ module Diplomacy
     # A hash of reachable provinces this turn to the pieces which
     # could move to that province.
     def self.reachable_provinces(pieces)
-      result = Hash.new{|h,k| h[k] = [] }
+      result = Hash.new {|h,k| h[k] = [] }
       pieces.each do |piece|
         result[piece.area.province].push piece
         piece.area.connections.each do |area|
@@ -109,7 +109,7 @@ module Diplomacy
       powers.each do |power|
         piececount = power.pieces_all.size
         supplycentrecount = power.supply_centres.size
-        log "#{power.definition}: #{piececount}/#{supplycentrecount}"
+        Util.log "#{power.definition}: #{piececount}/#{supplycentrecount}"
         diff = supplycentrecount - piececount
         result[power.definition] = diff if diff != 0
       end
@@ -212,17 +212,26 @@ module Diplomacy
     end
 
     def opponents(province, attacker)
-      result = @contenders.fetch_default(province, [])
-      # log "  attackers(#{province}) = #{result.map{|p| "#{p} (#{p.strength})"}.join(', ')}"
+      result = @contenders[province]
+      # Util.log "  attackers(#{province}) = #{result.map{|p| "#{p} (#{p.strength})"}.join(', ')}"
       if piece = piece(province) and !piece.moving?
         newpiece = piece.dup
         newpiece.supports = []
         result |= [newpiece]
       end
-      # log "  contenders(#{province}) = #{result.map{|p| "#{p} (#{p.strength})"}.join(', ')}"
-      result = result.maxes { |piece| piece.strength }
-      result.delete_if{|p| p.to_s == attacker.to_s }
-      # log "  opponents(#{province}) = #{result.map{|p| "#{p} (#{p.strength})"}.join(', ')}}"
+      # Util.log "  contenders(#{province}) = #{result.map{|p| "#{p} (#{p.strength})"}.join(', ')}"
+      result = maxes(result) { |p| p.strength }
+      result.delete_if { |p| p.to_s == attacker.to_s }
+      # Util.log "  opponents(#{province}) = #{result.map{|p| "#{p} (#{p.strength})"}.join(', ')}}"
+      return result
+    end
+
+    def maxes(array, &block)
+      result = []
+      max_value = array.map(&block).max
+      array.each do |element|
+        result << element if yield(element) == max_value
+      end
       return result
     end
 
@@ -270,7 +279,7 @@ module Diplomacy
 
     def remove_piece(piece)
       area = piece.area
-      log "#{piece}: Removing from #{self} (#{area.province})..."
+      Util.log "#{piece}: Removing from #{self} (#{area.province})..."
       if @pieces_dislodged[area] == piece
         @pieces_dislodged.delete area
       end
@@ -345,7 +354,7 @@ module Diplomacy
       area ||= piece.area
       owner = power(piece.owner.definition)
       piece = Piece.new(self, piece.type, owner, area, piece.identifier)
-      log "Adding piece #{piece} to turn #{self}..."
+      Util.log "Adding piece #{piece} to turn #{self}..."
       add_piece(piece)
       if area.province.supply? and (is_a?(@map.first_season) or is_a?(AdjustmentTurn))
         claim_province(area.province, piece.owner)
@@ -356,17 +365,17 @@ module Diplomacy
       owner = power(piece.owner.definition)
       newpiece = Piece.new(self, piece.type, owner, area, piece.identifier)
       newpiece.retreats.replace(piece.retreats)
-      log "Adding dislodged piece #{newpiece} to turn #{self}..."
+      Util.log "Adding dislodged piece #{newpiece} to turn #{self}..."
       add_piece_dislodged(newpiece)
     end
 
     def add_contender(province, piece)
-      @contenders.fetch_default(province, []).push piece
+      @contenders[province].push piece
     end
 
     def remove_contender(province, piece)
-      @contenders.fetch_default(province, []).delete piece
-      # log "#{piece}: Removed contention for #{province}, contenders(#{province}) = #{@contenders[province].map{|p| "#{p} (#{p.strength})}".join(', ')
+      @contenders[province].delete piece
+      # Util.log "#{piece}: Removed contention for #{province}, contenders(#{province}) = #{@contenders[province].map{|p| "#{p} (#{p.strength})}".join(', ')
     end
 
     def claim_province(province, newowner)
@@ -388,23 +397,23 @@ module Diplomacy
     private
 
     def orders_fill
-      log "FILLING IN DEFAULT ORDERS FOR TURN #{self}"
+      Util.log "FILLING IN DEFAULT ORDERS FOR TURN #{self}"
       @powers.each do |power|
         power.unordered_pieces.each do |piece|
           order = default_order(piece)
-          log "  #{order}"
+          Util.log "  #{order}"
           piece.order = order
         end
       end
     end
 
     def orders_validate
-      log "VALIDATING #{self}"
+      Util.log "VALIDATING #{self}"
       @powers.each do |power|
         power.orders.each do |order|
           order.validate
           order_validated(order) if order.successful?
-          log "  #{order}"
+          Util.log "  #{order}"
         end
       end
     end

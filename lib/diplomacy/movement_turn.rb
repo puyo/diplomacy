@@ -75,7 +75,7 @@ module Diplomacy
     end
 
     def orders_execute(next_turn)
-      log "EXECUTING #{self} -> #{next_turn}"
+      Util.log "EXECUTING #{self} -> #{next_turn}"
       orders.each{|o| o.execute(next_turn) }
     end
 
@@ -90,32 +90,32 @@ module Diplomacy
     end
 
     def orders_check_bounces
-      log "CHECK BOUNCES"
+      Util.log "CHECK BOUNCES"
       orders.sort{|a,b| b.piece.strength <=> a.piece.strength }.each do |order|
         if order.successful?
           if not order.checked
             order.check
           else
-            log "#{order}: Already checked, skipping..."
+            Util.log "#{order}: Already checked, skipping..."
           end
         end
       end
     end
 
     def orders_check_convoys
-      log "CHECK CONVOYS"
+      Util.log "CHECK CONVOYS"
       orders.each do |o| 
         o.check_disruptions if o.successful?
       end
     end
 
     def orders_cut_supports
-      log "CUT SUPPORTS"
+      Util.log "CUT SUPPORTS"
       orders.each{|o| o.cut_support }
     end
 
     def orders_tally_strengths
-      log "TALLY STRENGTHS"
+      Util.log "TALLY STRENGTHS"
       orders.each{|o| o.tally_strength }
     end
   end

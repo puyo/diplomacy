@@ -82,7 +82,7 @@ module Diplomacy
     end
 
     def remove_piece(piece)
-      log "#{self}: Removing piece #{piece}..."
+      Util.log "#{self}: Removing piece #{piece}..."
       @pieces.delete_if{|p| p == piece}
       @pieces_dislodged.delete_if{|p| p == piece}
     end

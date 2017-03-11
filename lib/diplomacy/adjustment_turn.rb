@@ -19,13 +19,12 @@ module Diplomacy
       @prevturn = prevturn
       @nextturn = nextturn
       @adjustments = nextturn.adjustments
-      @orders = {}
+      @orders = Hash.new { |h,k| h[k] = [] }
     end
 
     def orders(power=nil)
       if power
-        d = power(power).definition
-        @orders.fetch_default(d, [])
+        @orders[power(power).definition]
       else
         @orders.values.flatten
       end
@@ -40,16 +39,16 @@ module Diplomacy
     end
 
     def orders_execute(next_turn)
-      log "EXECUTING #{self} -> #{next_turn}"
+      Util.log "EXECUTING #{self} -> #{next_turn}"
       orders.each{|o| o.execute(next_turn) }
     end
 
     def add_order(order)
-      @orders.fetch_default(order.power.definition, []).push(order)
+      @orders[order.power.definition].push(order)
     end
 
     def remove_order(order)
-      @orders.fetch_default(order.power.definition, []).delete(order)
+      @orders[order.power.definition].delete(order)
     end
 
     def number_of_builds(power_definition)
@@ -63,7 +62,7 @@ module Diplomacy
     end
 
     def orders_fill
-      log "FILLING IN DEFAULT ORDERS FOR TURN #{self}"
+      Util.log "FILLING IN DEFAULT ORDERS FOR TURN #{self}"
       @adjustments.each do |power_definition, diff|
         orders = orders(power_definition)
         power = power(power_definition)
@@ -78,7 +77,7 @@ module Diplomacy
           if missing > 0
             missing.times do
               order = WaiveOrder.new(power)
-              log "  #{order}"
+              Util.log "  #{order}"
               add_order(order)
             end
           end
@@ -106,7 +105,7 @@ module Diplomacy
           missing.times do
             dist, piece, home = unordered_pieces.shift
             order = DisbandOrder.new(self, piece)
-            log "  #{order} (distance from home = #{dist})"
+            Util.log "  #{order} (distance from home = #{dist})"
             add_order(order)
           end
         end
@@ -114,12 +113,12 @@ module Diplomacy
     end
 
     def orders_validate
-      log "VALIDATING #{self}"
+      Util.log "VALIDATING #{self}"
       @powers.each do |power|
         orders(power.definition).each do |order|
           order.validate
           order_validated(order) if order.successful?
-          log "  #{order}"
+          Util.log "  #{order}"
         end
       end
     end

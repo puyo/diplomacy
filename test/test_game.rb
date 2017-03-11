@@ -1,26 +1,25 @@
 require 'test/unit'
 require_relative '../lib/diplomacy/game'
+require_relative '../lib/diplomacy/util'
 
 class GameTest < Test::Unit::TestCase
   include Diplomacy
 
-  @@game = Game.new("test", "standard")
-  @@game.start(bots=false, nice=false)
-
   def reset
-    @game = @@game.deep_copy
+    @game = Game.new("test", "standard")
+    @game.start(false, false)
     @map = @game.map
   end
 
   def setup
     reset
-    log '----------------------------------------------------------'
-    log '----------------------------------------------------------'
-    log '----------------------------------------------------------'
-    log method_name
-    log '----------------------------------------------------------'
-    log '----------------------------------------------------------'
-    log '----------------------------------------------------------'
+    Util.log '----------------------------------------------------------'
+    Util.log '----------------------------------------------------------'
+    Util.log '----------------------------------------------------------'
+    Util.log method_name
+    Util.log '----------------------------------------------------------'
+    Util.log '----------------------------------------------------------'
+    Util.log '----------------------------------------------------------'
   end
 
   attr_reader :game, :map
@@ -593,7 +592,6 @@ class GameTest < Test::Unit::TestCase
 
   # all sorts of weird stuff...
   def test_26
-    log method_name
     turn.clear_pieces
     ef1 = england.make_piece "f den"
     ef2 = england.make_piece "f nth"

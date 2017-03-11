@@ -96,12 +96,12 @@ module Diplomacy
 
     def add_support(piece)
       @supports |= [piece]
-      log "#{self} supports = #{@supports.join(', ')}"
+      Util.log "#{self} supports = #{@supports.join(', ')}"
     end
 
     def remove_support(piece)
       @supports -= [piece]
-      log "#{self} supports = #{@supports.join(', ')}"
+      Util.log "#{self} supports = #{@supports.join(', ')}"
     end
 
     def order=(value)
@@ -117,7 +117,7 @@ module Diplomacy
     end
 
     def dislodge(provinces_attacked_from)
-      log "#{self}: Dislodged by attack from #{provinces_attacked_from.join(', ')}"
+      Util.log "#{self}: Dislodged by attack from #{provinces_attacked_from.join(', ')}"
       no_retreat_provinces = provinces_attacked_from
       if @order.respond_to?(:destination)
         no_retreat_provinces.push @order.destination.province
@@ -125,7 +125,7 @@ module Diplomacy
       @retreats = @area.connections.reject do |area|
         no_retreat_provinces.include? area.province
       end
-      log "#{self}: Retreats = #{retreats.join(', ')}"
+      Util.log "#{self}: Retreats = #{retreats.join(', ')}"
       order.add_result(Order::DISLODGED)
       order.piece_dislodged
     end

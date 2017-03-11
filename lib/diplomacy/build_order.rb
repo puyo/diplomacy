@@ -33,15 +33,15 @@ module Diplomacy
     def validate
       unless power.owns?(@area.province)
         add_result(Order::IMPOSSIBLE)
-        log "#{self} is impossible, #{power} does not own that province"
+        Util.log "#{self} is impossible, #{power} does not own that province"
       end
       unless power.home?(@area.province)
         add_result(Order::IMPOSSIBLE)
-        log "#{self} is impossible, #{area.province} is not a home centre of #{power}"
+        Util.log "#{self} is impossible, #{area.province} is not a home centre of #{power}"
       end
       unless 1 == power.turn.orders(power).find_all{|o| o.is_a?(BuildOrder) and o.area.province == @area.province and o.successful? }.size
         add_result(Order::IMPOSSIBLE)
-        log "#{self} is impossible, #{area.province} is already being built upon"
+        Util.log "#{self} is impossible, #{area.province} is already being built upon"
       end
     end
 

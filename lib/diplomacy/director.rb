@@ -1,6 +1,6 @@
 require_relative './game'
 require_relative './turn'
-require_relative './common'
+require_relative './util'
 require 'fileutils'
 
 module Diplomacy
@@ -24,7 +24,7 @@ module Diplomacy
 
       bots.each{|bot| bot.director = self }
 
-      ailog "Director: Started for player #{human_nationality}..."
+      Util.ailog "Director: Started for player #{human_nationality}..."
 
       FileUtils.rm_f "enmities-#{@game.name}-*.txt"
       FileUtils.rm_f "size-#{@game.name}.txt"
@@ -80,7 +80,7 @@ module Diplomacy
           log_enmities(nat)
         end
       else
-        ailog "Director: Enmities(#{nationality}):\n  " +
+        Util.ailog "Director: Enmities(#{nationality}):\n  " +
               @enmity[nationality].to_a.sort_by{|n,e| -e}.map{|n,e| format("%s: %.2f", n.name, e) }.join("\n  ")
       end
     end
@@ -90,41 +90,41 @@ module Diplomacy
       @enmity.each do |from, enmities|
         toprint[from] = enmities[nat] unless from == nat
       end
-      ailog "Director: EnmitiesTowards(#{nat}):\n  " +
+      Util.ailog "Director: EnmitiesTowards(#{nat}):\n  " +
             toprint.to_a.sort_by{|n,e| -e}.map{|n,e| format("%s: %.2f", n.name, e) }.join("\n  ")
     end
 
     def piece_attacked(piece, target)
-      ailog "Director: #{piece} ATTACKED #{target}"
-      ailog "Director: BEFORE:"
+      Util.ailog "Director: #{piece} ATTACKED #{target}"
+      Util.ailog "Director: BEFORE:"
       log_enmities(target.nationality)
       log_enmities(piece.nationality)
       @enmity[target.nationality][piece.nationality] *= 2
       @enmity[piece.nationality][target.nationality] *= 1.25
       scale_enmities(1.0, piece.nationality, target.nationality)
-      ailog "Director: AFTER:"
+      Util.ailog "Director: AFTER:"
       log_enmities(target.nationality)
       log_enmities(piece.nationality)
     end
 
     def piece_dislodged(piece, target)
-      ailog "Director: #{piece} DISLODGED #{target}"
-      ailog "Director: BEFORE:"
+      Util.ailog "Director: #{piece} DISLODGED #{target}"
+      Util.ailog "Director: BEFORE:"
       log_enmities(target.nationality)
       log_enmities(piece.nationality)
       @enmity[target.nationality][piece.nationality] *= 3
       @enmity[piece.nationality][target.nationality] *= 1.5
       scale_enmities(1.0, piece.nationality, target.nationality)
-      ailog "Director: AFTER:"
+      Util.ailog "Director: AFTER:"
       log_enmities(target.nationality)
       log_enmities(piece.nationality)
     end
 
     def province_captured(province, oldowner, newowner)
-      ailog "Director: #{newowner} CAPTURED #{oldowner.definition.adjective} #{province}"
+      Util.ailog "Director: #{newowner} CAPTURED #{oldowner.definition.adjective} #{province}"
       oldnat = oldowner.definition
       newnat = newowner.definition
-      ailog "Director: BEFORE:"
+      Util.ailog "Director: BEFORE:"
       log_enmities(oldnat)
       log_enmities(newnat)
       if oldowner.home?(province)
@@ -133,7 +133,7 @@ module Diplomacy
         @enmity[oldnat][newnat] *= 4
       end
       scale_enmities(1.0, oldnat, newnat)
-      ailog "Director: AFTER:"
+      Util.ailog "Director: AFTER:"
       log_enmities(oldnat)
       log_enmities(newnat)
     end
@@ -166,16 +166,16 @@ module Diplomacy
     end
 
     def direct(turn)
-      ailog "Director: Directing turn #{turn}"
+      Util.ailog "Director: Directing turn #{turn}"
       @turn = turn
 
       output_plot_data
       remove_dead_powers
 
-      ailog "Director: Enmities at start of turn #{turn}:"
-      ailog "--"
+      Util.ailog "Director: Enmities at start of turn #{turn}:"
+      Util.ailog "--"
       log_enmities
-      ailog "--"
+      Util.ailog "--"
 
       if turn.is_a?(MovementTurn)
         #				promote_challenge # makes it too difficult in practice :-(
@@ -186,23 +186,23 @@ module Diplomacy
     end
 
     def promote_challenge
-      ailog "Director: Promoting challenge on turn #{turn}"
+      Util.ailog "Director: Promoting challenge on turn #{turn}"
 
       friendly_pieces = power.pieces
       provinces = power.provinces + power.pieces.map{|p| p.area.province }
       pieces = provinces.map{|prov| turn.adjacent_pieces(prov) }.flatten.uniq
       enemy_pieces = pieces.reject{|piece| piece.nationality == nationality }
 
-      ailog "Director: Friendlies = #{friendly_pieces.join(', ')}"
-      ailog "Director: Enemies = #{enemy_pieces.join(', ')}:"
+      Util.ailog "Director: Friendlies = #{friendly_pieces.join(', ')}"
+      Util.ailog "Director: Enemies = #{enemy_pieces.join(', ')}:"
 
       give = rand(2)+1 # let the player have 2-3 pieces unharrassed
 
       expected = expected_attacks(enemy_pieces)
       piecesperattack = friendly_pieces.size/(expected+give)
 
-      ailog "Director: # Expected attacks = #{expected}:"
-      ailog "Director: PiecesPerAttack = #{piecesperattack}:"
+      Util.ailog "Director: # Expected attacks = #{expected}:"
+      Util.ailog "Director: PiecesPerAttack = #{piecesperattack}:"
 
       bot_nationalities.each do |from|
         oldval = @enmity[from][nationality]
@@ -212,10 +212,10 @@ module Diplomacy
 
       scale_enmities(1.0, *nationalities)
 
-      ailog "Director: Enmities after challenge promoted on #{turn}:"
-      ailog "--"
+      Util.ailog "Director: Enmities after challenge promoted on #{turn}:"
+      Util.ailog "--"
       log_enmities
-      ailog "--"
+      Util.ailog "--"
     end
     
     def expected_attacks(enemy_pieces)
@@ -234,15 +234,15 @@ module Diplomacy
 
       scale_enmities(1.0, *nationalities)
 
-      ailog "Director: Enmities after balance promoted on #{turn}:"
-      ailog "--"
+      Util.ailog "Director: Enmities after balance promoted on #{turn}:"
+      Util.ailog "--"
       log_enmities
-      ailog "--"
+      Util.ailog "--"
     end
 
     def remove_dead_powers
       dead_nationalities = @enmity.map{|from, enmities| from} - nationalities
-      ailog "Director: Removing power(s) #{dead_nationalities.join(', ')}"
+      Util.ailog "Director: Removing power(s) #{dead_nationalities.join(', ')}"
       dead_nationalities.each do |dead_nat|
         @enmity.delete dead_nat
         @enmity.each do |from, enmities|
@@ -267,12 +267,12 @@ module Diplomacy
         actual_length = Math.sqrt(actual_length)
         scale = desired_length.to_f/actual_length.to_f
 
-        ailog "Director: Scaling all enmities from #{nat} by #{scale}"
+        Util.ailog "Director: Scaling all enmities from #{nat} by #{scale}"
         enmities.each do |nat2, val|
           oldval = enmities[nat2]
           newval = enmities[nat2] * scale
           enmities[nat2] = newval
-          ailog "Director: Enmity(#{nat} -> #{nat2}) changed from #{oldval} to #{newval}"
+          Util.ailog "Director: Enmity(#{nat} -> #{nat2}) changed from #{oldval} to #{newval}"
         end
       end
     end

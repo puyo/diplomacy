@@ -51,7 +51,7 @@ module Diplomacy
             o.order.piece_convoyed == @piece
         end
         if opponents.size > 0
-          log "Convoy #{@piece} attacked by #{opponents.join(', ')}"
+          Util.log "Convoy #{@piece} attacked by #{opponents.join(', ')}"
           add_result(CONVOY_ATTACKED)
           notify_convoys
           return
@@ -67,16 +67,16 @@ module Diplomacy
       last = piece.area
       @path.each do |area|
         if not convoy = @turn.piece(area)
-          log "No convoy available from #{last} to #{area}."
+          Util.log "No convoy available from #{last} to #{area}."
           add_result(FAILED)
         elsif not convoy.order.is_a? ConvoyOrder
-          log "Convoy '#{convoy}' is not convoying for move '#{self}'. Its order is #{convoy.order.class}"
+          Util.log "Convoy '#{convoy}' is not convoying for move '#{self}'. Its order is #{convoy.order.class}"
           add_result(FAILED)
         elsif convoy.order.piece_convoyed != @piece
-          log "Convoy '#{convoy}' is not convoying piece for move '#{self}'."
+          Util.log "Convoy '#{convoy}' is not convoying piece for move '#{self}'."
           add_result(FAILED)
         elsif convoy.order.piece_destination != @destination
-          log "Convoy '#{convoy}' is not convoying to destination for move '#{self}'."
+          Util.log "Convoy '#{convoy}' is not convoying to destination for move '#{self}'."
           add_result(FAILED)
         end
       end
@@ -88,7 +88,7 @@ module Diplomacy
         @piece.supports.clear
         @path.each do |area|
           if convoy = @turn.piece(area) and convoy.order == ConvoyOrder and convoy.order.piece_convoyed == @piece
-            log "Notifying convoy #{convoy} of #{self} failure"
+            Util.log "Notifying convoy #{convoy} of #{self} failure"
             convoy.add_result(FAILED)
           end
         end

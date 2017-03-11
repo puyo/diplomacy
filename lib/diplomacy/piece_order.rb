@@ -13,12 +13,12 @@ module Diplomacy
     # --- Queries ----------------------------
 
     def check
-      log "#{@piece}: Checking order..."
+      Util.log "#{@piece}: Checking order..."
       @results.clear
       check_bounces
 
       if bounced?
-        log "#{@piece}: Checking for opponents back home which may now fail..."
+        Util.log "#{@piece}: Checking for opponents back home which may now fail..."
         @turn.opponents(@piece.area.province, @piece).each do |op|
           op.order.check if op.order.successful?
         end
@@ -29,10 +29,10 @@ module Diplomacy
 
     def execute(next_turn)
       if dislodged?
-        log "#{piece}: Dislodged..."
+        Util.log "#{piece}: Dislodged..."
         next_turn.copy_piece_dislodged(piece, piece.area)
       else
-        log "#{piece}: Staying in #{piece.area}..."
+        Util.log "#{piece}: Staying in #{piece.area}..."
         next_turn.copy_piece_to(piece, piece.area)
       end
     end

@@ -1,7 +1,7 @@
 require_relative './map'
 require_relative './turn'
 require_relative './player'
-require_relative './common'
+require_relative './util'
 require_relative './error'
 require_relative './signals'
 require_relative './director'
@@ -51,7 +51,7 @@ module Diplomacy
     def previous_turn; @turns[-2] end
     def id(turn=current_turn); "#{name}-#{turn.id}" end
     def powers; turn.powers end
-    def power(id); turn.powers.partial_match(id) end
+    def power(id); Util.partial_match(turn.powers, id) end
     def power_definitions; map.power_definitions end
     def power_definition(id); map.power_definition(id) end
 
@@ -105,8 +105,8 @@ module Diplomacy
       raise Error, "Game not started" unless started?
       t = turn.next_turn
       @turns.push t
-      log "-------------------------------------"
-      log ""
+      Util.log "-------------------------------------"
+      Util.log ""
 
       director.direct(t) if director
       request_orders

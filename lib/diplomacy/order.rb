@@ -28,9 +28,9 @@ module Diplomacy
     end
     include Comparable
 
-    def bounced?; @results.has(BOUNCED) end
-    def cut?; @results.has(CUT) end
-    def dislodged?; @results.has(DISLODGED) end
+    def bounced?; @results.include?(BOUNCED) end
+    def cut?; @results.include?(CUT) end
+    def dislodged?; @results.include?(DISLODGED) end
 
     def inspect
       "Order:#{to_s}"
@@ -62,7 +62,7 @@ module Diplomacy
 
     def add_result(result)
       @results |= [result]
-      log "#{self} results changed"
+      Util.log "#{self} results changed"
     end
 
     def tally_strength

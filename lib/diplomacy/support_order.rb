@@ -69,13 +69,13 @@ module Diplomacy
 
     def tally_strength
       if successful?
-        log "#{piece} added strength to #{supported_piece}..."
+        Util.log "#{piece} added strength to #{supported_piece}..."
         supported_piece.add_support(piece)
       end
     end
 
     def piece_dislodged
-      log "#{piece}: Withdrawing support for '#{supported_piece}' due to dislodgement"
+      Util.log "#{piece}: Withdrawing support for '#{supported_piece}' due to dislodgement"
       supported_piece.remove_support(piece)
       supported_piece.order.check
     end
@@ -83,23 +83,23 @@ module Diplomacy
     def validate
       if support_self?
         add_result(IMPOSSIBLE)
-        log "Attempt by piece to support itself, with order '#{self}'"
+        Util.log "Attempt by piece to support itself, with order '#{self}'"
       end
       if not piece?
         add_result(IMPOSSIBLE)
-        log "Attempt to support non-existant piece, with order '#{self}'"
+        Util.log "Attempt to support non-existant piece, with order '#{self}'"
       end
       if not orders_match?
         add_result(IMPOSSIBLE)
-        log "Supported piece's order does not match support order '#{self}'"
+        Util.log "Supported piece's order does not match support order '#{self}'"
       end
       if unreachable?
         add_result(IMPOSSIBLE)
-        log "Supporting piece cannot reach destination in support order '#{self}'"
+        Util.log "Supporting piece cannot reach destination in support order '#{self}'"
       end
       if attacking_self?
         add_result(IMPOSSIBLE)
-        log "Supporting piece cannot support attack on friendly unit in support order '#{self}'"
+        Util.log "Supporting piece cannot support attack on friendly unit in support order '#{self}'"
       end
     end
 	end

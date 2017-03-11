@@ -73,18 +73,18 @@ module Diplomacy
       if supply?
         if owned?
           if threat == 0
-            ailog "#{@power.definition}: Reducing value of #{@area} as it is secure"
+            Util.ailog "#{@power.definition}: Reducing value of #{@area} as it is secure"
             value = 0.0 #value * 0.75
           elsif (threat >= security) or (threat > 0 and empty?)
-            ailog "#{@power.definition}: Increasing value of #{@area} as it is threatened (#{@our_pieces.inspect} < #{threat}, or empty and threatened)"
+            Util.ailog "#{@power.definition}: Increasing value of #{@area} as it is threatened (#{@our_pieces.inspect} < #{threat}, or empty and threatened)"
             value = value * 1.5
           end
         else
           if security > threat
-            ailog "#{@power.definition}: Increasing value of #{@area} as it is not well protected (#{@our_pieces.inspect} > #{threat})"
+            Util.ailog "#{@power.definition}: Increasing value of #{@area} as it is not well protected (#{@our_pieces.inspect} > #{threat})"
             value = value * 1.5
           elsif security == threat and foreign? and @turn.is_a?(Spring)
-            ailog "#{@power.definition}: Reducing value of #{@area} as it is protected in Spring"
+            Util.ailog "#{@power.definition}: Reducing value of #{@area} as it is protected in Spring"
             value = value * 0.90
           end
         end
@@ -195,7 +195,7 @@ module Diplomacy
     end
 
     def request_orders(game, power)
-      ailog "-------------------------------------------"
+      Util.ailog "-------------------------------------------"
       clear
       @turn = power.turn
       @game = game
@@ -230,21 +230,21 @@ module Diplomacy
       # output_value_map
 
       orders_text = @orders.values.map{|o| o.text }.join("\n")
-      ailog orders_text
+      Util.ailog orders_text
 
       begin
         power.submit_orders(orders_text)
       rescue Diplomacy::Error => e
-        ailog "Error submitting orders: #{e}"
+        Util.ailog "Error submitting orders: #{e}"
         orders_text = ""
-        ailog "Retrying:\n#{orders_text}"
+        Util.ailog "Retrying:\n#{orders_text}"
         retry
       rescue Exception => e
-        ailog "Error submitting orders: #{e}"
+        Util.ailog "Error submitting orders: #{e}"
         power.submit_orders("")
       end
 
-      ailog "-------------------------------------------"
+      Util.ailog "-------------------------------------------"
     end
 
     def key(turn)
@@ -266,8 +266,8 @@ module Diplomacy
         prev_key = key(@game.previous_turn)
         @failed_previous_orders[prev_key] = previous_orders.reject{|o| o.successful? }
         @failed_previous_orders[prev_key].map!{|o| o.text }
-        log "Previous orders of #{@power.definition} on turn type #{key} which failed:"
-        log @failed_previous_orders[prev_key].join("\n")
+        Util.log "Previous orders of #{@power.definition} on turn type #{key} which failed:"
+        Util.log @failed_previous_orders[prev_key].join("\n")
 
         inform_director if director
       end
@@ -333,11 +333,11 @@ module Diplomacy
           owner_e = @enmities[owner] || 0.5
           occupier_e = @enmities[occupier] || 0.5
 
-          ailog "#{nationality}: Owner of #{area} is #{owner}, which we hate this much: #{owner_e}"
-          ailog "#{nationality}: Occupier of #{area} is #{occupier}, which we hate this much: #{occupier_e}"
+          Util.ailog "#{nationality}: Owner of #{area} is #{owner}, which we hate this much: #{owner_e}"
+          Util.ailog "#{nationality}: Occupier of #{area} is #{occupier}, which we hate this much: #{occupier_e}"
           
           scale = owner_e * occupier_e
-          ailog "#{nationality}: Scaling value of #{area} by #{scale}"
+          Util.ailog "#{nationality}: Scaling value of #{area} by #{scale}"
           value *= scale
         end
       end
@@ -354,9 +354,9 @@ module Diplomacy
     def possible_objectives(pieces=available_pieces)
       return [] if pieces.empty?
 
-      ailog "#{nationality}: Available pieces for next objective = #{pieces.join(', ')}"
+      Util.ailog "#{nationality}: Available pieces for next objective = #{pieces.join(', ')}"
 
-      ailog "#{nationality}: Possible objectives:"
+      Util.ailog "#{nationality}: Possible objectives:"
       provinces = Turn.reachable_provinces(pieces).to_a
       provinces.reject! do |prov,pieces|
         nomove = @orders.to_a.find do |p,o|
@@ -380,7 +380,7 @@ module Diplomacy
           end
         end
         value2 = value + rand*(value/4.0)
-        ailog format("  %s (%.2f [%.2f], %s)", province.inspect, value, value2, pieces.inspect)
+        Util.ailog format("  %s (%.2f [%.2f], %s)", province.inspect, value, value2, pieces.inspect)
         [value2, province, pieces]
       end
       return result.sort{|a,b| b[0] <=> a[0] }
@@ -416,11 +416,11 @@ module Diplomacy
             difficulty -= 1.0
           end
 
-          ailog "#{nationality}: Trying objective #{province}, difficulty #{difficulty}..."
+          Util.ailog "#{nationality}: Trying objective #{province}, difficulty #{difficulty}..."
 
           until pieces.empty? or used.size.to_f > difficulty
             piece = pieces.shift
-            ailog "#{nationality}: #{piece.inspect} -> #{province}"
+            Util.ailog "#{nationality}: #{piece.inspect} -> #{province}"
 
             if province == piece.area.province
               order = HoldOrder.new(@turn, piece)
@@ -448,21 +448,21 @@ module Diplomacy
       attempts = 0
       while !available_pieces.empty? and attempts < 100
         route_pieces(available_pieces, possible_objectives)
-        ailog "#{nationality}: Orders:"
+        Util.ailog "#{nationality}: Orders:"
         @orders.each do |p,o|
-          ailog o.text
+          Util.ailog o.text
         end
-        ailog "#{nationality}: Pieces left: #{available_pieces.join(', ')}"
-        ailog "#{nationality}: Objectives left: #{@objectives.map{|obj| obj[1]}.join(', ')}"
+        Util.ailog "#{nationality}: Pieces left: #{available_pieces.join(', ')}"
+        Util.ailog "#{nationality}: Objectives left: #{@objectives.map{|obj| obj[1]}.join(', ')}"
         generate_convoys
         generate_supports
         attempts += 1
       end
       if attempts == 100
         puts "Warning: Gave up retrying orders."
-        ailog "Warning: Gave up retrying orders. Results:"
+        Util.ailog "Warning: Gave up retrying orders. Results:"
         @orders.each do |p,o|
-          ailog '  ' + o.text
+          Util.ailog '  ' + o.text
         end
       end
     end
@@ -473,7 +473,7 @@ module Diplomacy
         dest = order.destination.province
         pieces = pieces_moving_to(dest)
         if pieces.size >= 2
-          ailog "#{nationality}: Bounce detected! Pieces #{pieces.map{|p| p.first}.join(' and ')} are moving to #{dest}. Generating supports..."
+          Util.ailog "#{nationality}: Bounce detected! Pieces #{pieces.map{|p| p.first}.join(' and ')} are moving to #{dest}. Generating supports..."
 
           # Pick the N-1 pieces with the lowest threats and make them support moves.
 
@@ -496,8 +496,8 @@ module Diplomacy
             moving_piece = sorted.pop
           end
 
-          ailog 'Moving piece: ' + moving_piece.inspect
-          ailog 'Supports    : ' + sorted.inspect
+          Util.ailog 'Moving piece: ' + moving_piece.inspect
+          Util.ailog 'Supports    : ' + sorted.inspect
 
           moving_pieces = []
           if moving_piece.last.is_a?(ConvoyOrder)
@@ -542,8 +542,8 @@ module Diplomacy
         next unless order.respond_to?(:destination)
         next if piece.type != 'f' or !piece.area.province.areas('a').empty?
         fleet = piece
-        ailog "#{nationality}: Generating convoy orders..."
-        ailog "#{nationality}: fleet = #{fleet}"
+        Util.ailog "#{nationality}: Generating convoy orders..."
+        Util.ailog "#{nationality}: fleet = #{fleet}"
         provinces = Turn.reachable_provinces([fleet])
         areas = provinces.map{|prov, pieces| prov.areas('a') }.flatten
         armies = @orders.find_all do |piece, p_order|
@@ -559,12 +559,12 @@ module Diplomacy
         # then make an appropriate convoy order for the pair
 
         fleet_value = @area_data[order.destination].value - @area_data[fleet.area].value
-        ailog "#{nationality}: Current fleet value = #{fleet_value}"
-        ailog "#{nationality}: Armies = #{armies.map{|p,o| o}.join(', ')}"
+        Util.ailog "#{nationality}: Current fleet value = #{fleet_value}"
+        Util.ailog "#{nationality}: Armies = #{armies.map{|p,o| o}.join(', ')}"
         armies.each do |army, army_order|
           next_fleet = false
           current_army_value = @area_data[army_order.destination].value
-          ailog "#{nationality}: Current army value = #{current_army_value}"
+          Util.ailog "#{nationality}: Current army value = #{current_army_value}"
           areas.each do |area|
             already_there = area.province == army.area.province
             already_moving_there = area.province == army_order.destination.province
@@ -573,18 +573,18 @@ module Diplomacy
 
             if other_pieces.empty? and !already_moving_there and !can_move_there_itself and !already_there
               potential_army_value = @area_data[area].value
-              ailog "#{nationality}: #{army} value(#{area}) = #{potential_army_value}"
+              Util.ailog "#{nationality}: #{army} value(#{area}) = #{potential_army_value}"
               if potential_army_value > current_army_value + fleet_value
                 make_convoy_order(fleet, army, area)
                 next_fleet = true
                 break
               end
             else
-              ailog "#{nationality}: #{army} not being convoyed to #{area}: "
-              ailog "Piece(s): #{other_pieces.join(', ')} already moving there" if !other_pieces.empty?
-              ailog "Can move there itself" if can_move_there_itself
-              ailog "Already moving there" if already_moving_there
-              ailog "Already there" if already_there
+              Util.ailog "#{nationality}: #{army} not being convoyed to #{area}: "
+              Util.ailog "Piece(s): #{other_pieces.join(', ')} already moving there" if !other_pieces.empty?
+              Util.ailog "Can move there itself" if can_move_there_itself
+              Util.ailog "Already moving there" if already_moving_there
+              Util.ailog "Already there" if already_there
             end
           end
           break if next_fleet
@@ -593,7 +593,7 @@ module Diplomacy
     end
 
     def make_convoy_order(fleet, army, destination)
-      ailog "#{nationality}: Making convoy order: #{fleet} C #{army} -> #{destination}"
+      Util.ailog "#{nationality}: Making convoy order: #{fleet} C #{army} -> #{destination}"
       fo = ConvoyOrder.new(@turn, fleet, army, destination)
       ao = ConvoyedMoveOrder.new(@turn, army, [fleet.area], destination)
       unless @orders_tried[army].include?(ao.text)
@@ -610,7 +610,7 @@ module Diplomacy
         return
       end
 
-      ailog "#{piece}: Changing order from #{oldorder} to #{neworder}"
+      Util.ailog "#{piece}: Changing order from #{oldorder} to #{neworder}"
 
       here = piece.area.province
 
@@ -633,7 +633,7 @@ module Diplomacy
         end
         redo_pieces = redo_orders.map{|p,o| p}
 
-        ailog "#{piece}: Redoing pieces #{redo_pieces.join(', ')}"
+        Util.ailog "#{piece}: Redoing pieces #{redo_pieces.join(', ')}"
 
         redo_pieces.each do |p,o|
           @orders.delete p
@@ -643,7 +643,7 @@ module Diplomacy
 
     def generate_retreats
       pieces = @power.pieces_dislodged.sort_by{rand}
-      ailog "#{nationality}: Dislodged pieces = #{pieces.join(', ')}"
+      Util.ailog "#{nationality}: Dislodged pieces = #{pieces.join(', ')}"
       pieces.each do |piece|
         destinations = piece.retreats.sort_by{|a| -@area_data[a].value }
         @possible_orders[piece] = []
@@ -651,7 +651,7 @@ module Diplomacy
           @possible_orders[piece].push RetreatOrder.new(@turn, piece, dest)
         end
         @possible_orders[piece].push DisbandOrder.new(@turn, piece) # always a possibility...
-        ailog "POSSIBLE ORDERS(#{piece}) = #{@possible_orders[piece].join(', ')}"
+        Util.ailog "POSSIBLE ORDERS(#{piece}) = #{@possible_orders[piece].join(', ')}"
 
         @orders[piece] = @possible_orders[piece].shift
       end
@@ -676,7 +676,7 @@ module Diplomacy
 
     def generate_adjustments
       diff = @turn.adjustments[nationality]
-      ailog "#{nationality}: Diff = #{diff}"
+      Util.ailog "#{nationality}: Diff = #{diff}"
       if diff > 0
         generate_builds(diff)
       elsif diff < 0
@@ -686,7 +686,7 @@ module Diplomacy
 
     def generate_builds(num)
       available_homes = nationality.homes.find_all{|p| @turn.piece(p).nil? and @turn.owner(p).definition == nationality }
-      ailog "#{nationality}: Available homes = #{available_homes.join(', ')}"
+      Util.ailog "#{nationality}: Available homes = #{available_homes.join(', ')}"
       areas = Turn.reachable_provinces(available_pieces).map{|prov,pieces| prov.areas}.flatten
       areas_by_type = {}
       sum = 0.0
@@ -699,16 +699,16 @@ module Diplomacy
       homes_left = available_homes
       times_tried = 0
       while num > 0 and !homes_left.empty? and times_tried < 20
-        ailog "#{nationality}: Choosing what to build"
+        Util.ailog "#{nationality}: Choosing what to build"
         roll = rand*sum
-        ailog "#{nationality}: Rolled #{roll} vs. #{sum}"
+        Util.ailog "#{nationality}: Rolled #{roll} vs. #{sum}"
         count = 0.0
         build_type = "a"
         areas_by_type.each do |type, total_value|
           count += total_value
           if roll <= count
             build_type = type
-            ailog "#{nationality}: #{roll} < #{count}, build type = #{type}"
+            Util.ailog "#{nationality}: #{roll} < #{count}, build type = #{type}"
             break
           end
         end
@@ -722,7 +722,7 @@ module Diplomacy
             @orders[area] = BuildOrder.new(@power, area)
             homes_left.delete area.province
             num -= 1
-            ailog "#{nationality}: Building #{build_type} in #{area}, #{num} builds left"
+            Util.ailog "#{nationality}: Building #{build_type} in #{area}, #{num} builds left"
             break
           end
         end
@@ -743,25 +743,25 @@ module Diplomacy
       reachable = Turn.reachable_provinces(@power.pieces_all)
       @area_data.values.sort{|a,b| b.value <=> a.value }.each do |data|
         next unless reachable.include?(data.area.province)
-        ailog format("%s: Dest(%s, %30s) = %1.3f", nationality, data.area.type.upcase, data.area.to_s, data.value)
+        Util.ailog format("%s: Dest(%s, %30s) = %1.3f", nationality, data.area.type.upcase, data.area.to_s, data.value)
       end
-      ailog ''
+      Util.ailog ''
     end
 
     def submit_movement_orders(game, power)
-      ailog "AI power '#{nationality.name}' generating movement orders for turn #{@turn}..."
+      Util.ailog "AI power '#{nationality.name}' generating movement orders for turn #{@turn}..."
       calculate_values(key(@turn))
       generate_moves
     end
 
     def submit_retreat_orders(game, power)
-      ailog "AI power '#{nationality.name}' generating retreat orders for turn #{@turn}..."
+      Util.ailog "AI power '#{nationality.name}' generating retreat orders for turn #{@turn}..."
       calculate_values(key(@turn))
       generate_retreats
     end
 
     def submit_adjustment_orders(game, power)
-      ailog "AI power '#{nationality.name}' generating adjustment orders for turn #{@turn}..."
+      Util.ailog "AI power '#{nationality.name}' generating adjustment orders for turn #{@turn}..."
       calculate_values(key(@turn))
       generate_adjustments
     end
@@ -833,14 +833,14 @@ module Diplomacy
 
     def loadPNG(path)
       File.open(path, 'rb') do |f|
-        log "Reading '#{path}'..."
+        Util.log "Reading '#{path}'..."
         return GD::Image.newFromPng(f)
       end
     end
 
     def savePNG(image, path)
       File.open(path, "wb") do |f|
-        log "Writing '#{path}'..."
+        Util.log "Writing '#{path}'..."
 				image.png(f)
 			end
 		end
