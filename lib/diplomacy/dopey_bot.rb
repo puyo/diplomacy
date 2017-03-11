@@ -742,85 +742,87 @@ module Diplomacy
 
     # Value map ---------------
 
-    def value_maps_path
-      File.join(File.dirname(__FILE__), '..', 'turnmaps')
-    end
-
-    def value_map_path(type)
-      File.join(value_maps_path, "valuemap-#{@game.id(@turn)}-#{@power.definition.adjective.downcase}-#{type}.png")
-    end
-
-    def output_value_map
-      results = {}
-      @game.map.types.each do |type|
-        results[type] = load_png(@game.map.base_path)
+    if defined? GD
+      def value_maps_path
+        File.join(File.dirname(__FILE__), '..', 'turnmaps')
       end
 
-      maxval = maximum_value
-      white = RGB.new('#ffffff')
-      black = RGB.new('#000000')
+      def value_map_path(type)
+        File.join(value_maps_path, "valuemap-#{@game.id(@turn)}-#{@power.definition.adjective.downcase}-#{type}.png")
+      end
 
-      results.each do |type, result|
-        @turn.map.provinces.each do |province|
-          value = 0
-          areas = province.areas(type)
-          if !areas.empty?
-            areas.each do |area|
-              value += @area_data[area].value
-            end
-            value = value.to_f / areas.size
-            value /= maxval if maxval != 0.0
-            colour = white * value
-            colidx = result.colorResolve(colour.hex)
-            areas.each do |area|
-              area.coordinates.each do |x, y|
-                result.fill(x, y, colidx)
+      def output_value_map
+        results = {}
+        @game.map.types.each do |type|
+          results[type] = load_png(@game.map.base_path)
+        end
+
+        maxval = maximum_value
+        white = RGB.new('#ffffff')
+        black = RGB.new('#000000')
+
+        results.each do |type, result|
+          @turn.map.provinces.each do |province|
+            value = 0
+            areas = province.areas(type)
+            if !areas.empty?
+              areas.each do |area|
+                value += @area_data[area].value
               end
-            end
-          else
-            province.paint_coordinates.each do |x, y|
-              result.fill(x, y, result.colorResolve(black.hex))
+              value = value.to_f / areas.size
+              value /= maxval if maxval != 0.0
+              colour = white * value
+              colidx = result.colorResolve(colour.hex)
+              areas.each do |area|
+                area.coordinates.each do |x, y|
+                  result.fill(x, y, colidx)
+                end
+              end
+            else
+              province.paint_coordinates.each do |x, y|
+                result.fill(x, y, result.colorResolve(black.hex))
+              end
             end
           end
         end
-      end
 
-      piece_icons = {}
-      @game.map.types.each do |type|
-        piece_icons[type] = load_png(@game.piece_icon_path(type))
-      end
+        piece_icons = {}
+        @game.map.types.each do |type|
+          piece_icons[type] = load_png(@game.piece_icon_path(type))
+        end
 
-      results.each do |_type, result|
-        @game.paint_arrows(@turn, result, @orders.values)
-      end
-
-      @turn.pieces.each do |piece|
-        resource_col = piece.nationality.resource_colour
-        x, y = piece.area.coordinates[0]
-        icon = piece_icons[piece.type]
-        pw, ph = icon.width, icon.height
         results.each do |_type, result|
-          icon.copy(result, x - pw / 2, y - ph / 2, 0, 0, pw, ph)
-          result.fill(x, y, result.colorResolve(resource_col.hex))
+          @game.paint_arrows(@turn, result, @orders.values)
+        end
+
+        @turn.pieces.each do |piece|
+          resource_col = piece.nationality.resource_colour
+          x, y = piece.area.coordinates[0]
+          icon = piece_icons[piece.type]
+          pw, ph = icon.width, icon.height
+          results.each do |_type, result|
+            icon.copy(result, x - pw / 2, y - ph / 2, 0, 0, pw, ph)
+            result.fill(x, y, result.colorResolve(resource_col.hex))
+          end
+        end
+
+        results.each do |type, result|
+          save_png(result, value_map_path(type))
         end
       end
 
-      results.each do |type, result|
-        savePNG(result, value_map_path(type))
+      def load_png(path)
+        File.open(path, 'rb') do |f|
+          Util.log "Reading '#{path}'..."
+          return GD::Image.newFromPng(f)
+        end
       end
-    end
 
-    def load_png(path)
-      File.open(path, 'rb') do |f|
-        Util.log "Reading '#{path}'..."
-        return GD::Image.newFromPng(f)
-      end
-    end
-
-    def save_png(image, path)
-      File.open(path, 'wb') do |f|
-        Util.log "Writing '#{path}'..."
-        image.png(f)
+      def save_png(image, path)
+        File.open(path, 'wb') do |f|
+          Util.log "Writing '#{path}'..."
+          image.png(f)
+        end
       end
     end
   end
