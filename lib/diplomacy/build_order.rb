@@ -11,7 +11,7 @@ module Diplomacy
       @power, @area = power, area
     end
 
-    def self.parse(power, match_data, mine=true)
+    def self.parse(power, match_data, _mine = true)
       area = power.turn.map.parse_area(match_data[1])
       BuildOrder.new(power, area)
     end
@@ -31,15 +31,15 @@ module Diplomacy
     # --- Commands ---------------------------
 
     def validate
-      unless power.owns?(@area.province)
+      if !power.owns?(@area.province)
         add_result(Order::IMPOSSIBLE)
         Util.log "#{self} is impossible, #{power} does not own that province"
       end
-      unless power.home?(@area.province)
+      if !power.home?(@area.province)
         add_result(Order::IMPOSSIBLE)
         Util.log "#{self} is impossible, #{area.province} is not a home centre of #{power}"
       end
-      unless 1 == power.turn.orders(power).find_all{|o| o.is_a?(BuildOrder) and o.area.province == @area.province and o.successful? }.size
+      if power.turn.orders(power).find_all { |o| o.is_a?(BuildOrder) && o.area.province == @area.province && o.successful? }.size != 1
         add_result(Order::IMPOSSIBLE)
         Util.log "#{self} is impossible, #{area.province} is already being built upon"
       end

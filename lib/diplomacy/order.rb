@@ -3,14 +3,14 @@ module Diplomacy
     # --- Class ------------------------------
 
     RESULTS = [
-      AMBIGUOUS = "ambiguous",
-      BOUNCED = "bounced",
-      CONVOY_ATTACKED = "convoy attacked",
-      CUT = "cut",
-      DISLODGED = "dislodged",
-      FAILED = "failed",
-      IMPOSSIBLE = "impossible",
-    ]
+      AMBIGUOUS = 'ambiguous'.freeze,
+      BOUNCED = 'bounced'.freeze,
+      CONVOY_ATTACKED = 'convoy attacked'.freeze,
+      CUT = 'cut'.freeze,
+      DISLODGED = 'dislodged'.freeze,
+      FAILED = 'failed'.freeze,
+      IMPOSSIBLE = 'impossible'.freeze,
+    ].freeze
 
     def initialize(turn)
       @turn = turn
@@ -28,26 +28,37 @@ module Diplomacy
     end
     include Comparable
 
-    def bounced?; @results.include?(BOUNCED) end
-    def cut?; @results.include?(CUT) end
-    def dislodged?; @results.include?(DISLODGED) end
-
-    def inspect
-      "Order:#{to_s}"
+    def bounced?
+      @results.include?(BOUNCED)
     end
 
-    def successful?; @results.empty? end
+    def cut?
+      @results.include?(CUT)
+    end
+
+    def dislodged?
+      @results.include?(DISLODGED)
+    end
+
+    def inspect
+      "Order:#{self}"
+    end
+
+    def successful?
+      @results.empty?
+    end
 
     def to_s
       @string ||= string
-      return @string + results_string
+      @string + results_string
     end
 
     def results_string
-      if not @results.empty?
-        return " (" + @results.join(', ') + ")"
+      if !@results.empty?
+        ' (' + @results.join(', ') + ')'
+      else
+        ''
       end
-      return ""
     end
 
     def text
@@ -81,8 +92,8 @@ module Diplomacy
       # Do nothing by default
     end
 
-    def execute(next_turn)
-      raise "Abstract"
+    def execute(_next_turn)
+      raise 'Abstract'
     end
 
     def piece_dislodged

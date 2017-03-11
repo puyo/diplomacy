@@ -5,7 +5,7 @@ module Diplomacy
   class Turn
     # --- Class ------------------------------
 
-    def initialize(map, prevturn=nil)
+    def initialize(map, prevturn = nil)
       @game = nil
       @map = map
       @contenders = Hash.new { |h, k| h[k] = [] }
@@ -15,36 +15,35 @@ module Diplomacy
         @game = prevturn.game
         @year = prevturn.next_year
         @powers = prevturn.powers.map do |power|
-          if power.pieces_all.size > 0
+          if power.pieces_all.empty?
+            nil
+          else
             newpower = Turn::Power.new(self, power.definition)
             power.provinces.each do |p|
               newpower.add_province(p)
             end
             newpower
-          else
-            nil
           end
-        end
-        @powers.compact!
+        end.compact
       elsif map
         @year = map.first_year
         @powers = []
       else
-        raise ArgumentError, "Inadequate info to create turn"
+        raise ArgumentError, 'Inadequate info to create turn'
       end
     end
 
     # A hash of reachable provinces this turn to the pieces which
     # could move to that province.
     def self.reachable_provinces(pieces)
-      result = Hash.new {|h,k| h[k] = [] }
+      result = Hash.new { |h, k| h[k] = [] }
       pieces.each do |piece|
         result[piece.area.province].push piece
         piece.area.connections.each do |area|
           result[area.province].push piece
         end
       end
-      return result
+      result
     end
 
     # --- Queries ----------------------------
@@ -64,32 +63,35 @@ module Diplomacy
     def previous_turn
       if @game
         i = @game.turns.index(self)
-        raise Error, "Turn not found in game!" if i.nil?
-        return game.turns[i - 1]
-      else
-        return nil
+        raise Error, 'Turn not found in game!' if i.nil?
+        game.turns[i - 1]
       end
     end
 
-    def to_s; "#{season} #{year} #{name}" end
-    def id; "#{year}-#{type_id}" end
+    def to_s
+      [season, year, game].join(' ')
+    end
+
+    def id
+      [year, type_id].join('-')
+    end
 
     def inspect
       results
     end
 
     def results
-      result = "TURN: "
+      result = 'TURN: '
       result << to_s << "\n\n"
-      result << @powers.map{|p| p.inspect}.join
-      return result
+      result << @powers.map(&:inspect).join
+      result
     end
 
     def situation
-      result = "TURN: "
+      result = 'TURN: '
       result << to_s << "\n\n"
       powers.each do |power|
-        result << power.definition.name << ": "
+        result << power.definition.name << ': '
         result << power.pieces.join(', ') << "\n"
       end
       result << "\n"
@@ -98,10 +100,12 @@ module Diplomacy
         supplycentrecount = power.supply_centres.size
         result << "#{power.definition}: #{piececount}/#{supplycentrecount}" << "\n"
       end
-      return result
+      result
     end
 
-    def adjustments?; adjustments.size > 0 end
+    def adjustments?
+      !adjustments.empty?
+    end
 
     def adjustments
       result = Hash.new(0)
@@ -112,41 +116,41 @@ module Diplomacy
         diff = supplycentrecount - piececount
         result[power.definition] = diff if diff != 0
       end
-      return result
+      result
     end
 
-    def orders(power=nil)
+    def orders(power = nil)
       if power
         power(power).orders
       else
-        powers.map{|p| p.orders }.flatten
+        powers.map(&:orders).flatten
       end
     end
 
     def idle_powers
-      playing_powers.reject{|p| p.submitted? }
+      playing_powers.reject(&:submitted?)
     end
 
     def playing_powers
-      @powers.reject{|p| p.definition.is_a?(Uncontrolled) or p.definition.player.nil? }
+      @powers.reject { |p| p.definition.is_a?(Uncontrolled) || p.definition.player.nil? }
     end
 
     def powers
-      @powers.reject{|p| p.definition.is_a?(Uncontrolled) }
+      @powers.reject { |p| p.definition.is_a?(Uncontrolled) }
     end
 
-    def piece(place, type=nil, piecehash=@pieces)
+    def piece(place, type = nil, piecehash = @pieces)
       case place
       when Area
-        return piecehash[place]
+        piecehash[place]
       when Province
-        return piecehash.values.find{|p| p.area.province == place }
+        piecehash.values.find { |p| p.area.province == place }
       when String
-        return piecehash[@map.parse_area(place, type)]
+        piecehash[@map.parse_area(place, type)]
       end
     end
 
-    def pieces(power=nil)
+    def pieces(power = nil)
       if power
         power(power).pieces
       else
@@ -154,11 +158,11 @@ module Diplomacy
       end
     end
 
-    def piece_dislodged(place, type=nil)
+    def piece_dislodged(place, type = nil)
       piece(place, type, @pieces_dislodged)
     end
 
-    def pieces_dislodged(power=nil)
+    def pieces_dislodged(power = nil)
       if power
         power(power).pieces_dislodged
       else
@@ -167,62 +171,60 @@ module Diplomacy
     end
 
     def piece_owner?(text, owner)
-      begin
-        parse_piece(owner, text, true)
-      rescue Error
-        return false
-      end
+      parse_piece(owner, text, true)
+    rescue Error
+      false
     end
 
     def power(arg)
       case arg
       when Diplomacy::Power
-        return @powers.find{|p| p.definition == arg }
+        @powers.find { |p| p.definition == arg }
       when Turn::Power
-        return power(arg.definition)
+        power(arg.definition)
       else
         raise ArgumentError, "Argument type passed to #{self.class}#power invalid: #{arg.class}"
       end
     end
 
-    def parse_piece(power, text, mine=false)
+    def parse_piece(power, text, mine = false)
       area = map.parse_area(text)
-      results = pieces.find_all{|p| p.area == area}
+      results = pieces.find_all { |p| p.area == area }
       if mine
-        results.delete_if{|p| p.nationality != power.definition }
+        results.delete_if { |p| p.nationality != power.definition }
       end
       if results.empty?
         raise Error, "No such piece '#{text}'. Your pieces are:\n#{power.pieces.join("\n")}"
       end
       if results.size > 1
-        raise RuntimeError, "You have 2 pieces in one province!"
+        raise RuntimeError, 'You have 2 pieces in one province!'
       end
-      return results.first
+      results.first
     end
 
-    def parse_dislodged_piece(power, text, mine=true)
+    def parse_dislodged_piece(power, text, mine = true)
       area = map.parse_area(text)
       result = @pieces_dislodged[area]
       if result.nil?
         raise Error, "No such dislodged piece '#{text}'. Your pieces are:\n#{power.pieces_dislodged.join("\n")}"
       end
-      return nil if mine and result.owner != power
-      return result
+      return nil if mine && result.owner != power
+      result
     end
 
     def opponents(province, attacker)
       result = @contenders[province]
       # Util.log "  attackers(#{province}) = #{result.map{|p| "#{p} (#{p.strength})"}.join(', ')}"
-      if piece = piece(province) and !piece.moving?
+      if (piece = piece(province)) && !piece.moving?
         newpiece = piece.dup
         newpiece.supports = []
         result |= [newpiece]
       end
       # Util.log "  contenders(#{province}) = #{result.map{|p| "#{p} (#{p.strength})"}.join(', ')}"
-      result = maxes(result) { |p| p.strength }
+      result = maxes(result, &:strength)
       result.delete_if { |p| p.to_s == attacker.to_s }
       # Util.log "  opponents(#{province}) = #{result.map{|p| "#{p} (#{p.strength})"}.join(', ')}}"
-      return result
+      result
     end
 
     def maxes(array, &block)
@@ -231,26 +233,26 @@ module Diplomacy
       array.each do |element|
         result << element if yield(element) == max_value
       end
-      return result
+      result
     end
 
     def owner(province)
-      @powers.find{|p| p.provinces.include?(province) }
+      @powers.find { |p| p.provinces.include?(province) }
     end
 
     def adjacent_pieces(province)
       result = []
       province.adjacent_provinces.each do |connection|
         piece = piece(connection)
-        can_attack = (piece and piece.area.connections.map{|a| a.province }.include?(province))
+        can_attack = (piece && piece.area.connections.map(&:province).include?(province))
         result.push(piece) if can_attack
       end
-      return result
+      result
     end
 
     # --- Commands ---------------------------
 
-    def parse_order(power, text, mine=true)
+    def parse_order(power, text, mine = true)
       text = text.strip.downcase
       self.class::ORDER_TYPES.each do |order|
         if data = order::REGEXP.match(text)
@@ -261,7 +263,7 @@ module Diplomacy
     end
 
     def add_piece(piece)
-      if existing = @pieces[piece.area] and existing.nationality != piece.nationality and piece.id != existing.id
+      if existing = @pieces[piece.area] && existing.nationality != piece.nationality && piece.id != existing.id
         raise Error, "Already a piece there: #{existing}, cannot add piece: #{piece}"
       end
       piece.owner.add_piece(piece)
@@ -292,12 +294,12 @@ module Diplomacy
       @powers.push power
     end
 
-    def add_order(order)
-      raise Error, "Abstract"
+    def add_order(_order)
+      raise Error, 'Abstract'
     end
 
-    def remove_order(order)
-      raise Error, "Abstract"
+    def remove_order(_order)
+      raise Error, 'Abstract'
     end
 
     def clear_pieces
@@ -313,14 +315,14 @@ module Diplomacy
       orders = []
       begin
         text.each_line do |line|
-          next if line.strip == ""
+          next if line.strip == ''
           order = parse_order(power, line, true)
           orders << order
         end
         orders.each do |order|
           add_order(order)
         end
-      rescue Exception => e
+      rescue StandardError => e
         raise Error, e.message, e.backtrace
       end
 
@@ -330,9 +332,9 @@ module Diplomacy
           order.validate
           ok = false unless order.successful?
         end
-        if not ok
-          orders.each{|order| remove_order(order) }
-          raise Error, orders.join(", ")
+        if !ok
+          orders.each { |order| remove_order(order) }
+          raise Error, orders.join(', ')
         end
       end
 
@@ -342,20 +344,20 @@ module Diplomacy
     def build_piece(owner, area)
       piece = Piece.new(self, area.type, owner, area)
       add_piece(piece)
-      return piece
+      piece
     end
 
     def make_piece(owner, text)
       build_piece(owner, @map.parse_area(text))
     end
 
-    def copy_piece_to(piece, area=nil)
+    def copy_piece_to(piece, area = nil)
       area ||= piece.area
       owner = power(piece.owner.definition)
       piece = Piece.new(self, piece.type, owner, area, piece.identifier)
       Util.log "Adding piece #{piece} to turn #{self}..."
       add_piece(piece)
-      if area.province.supply? and (is_a?(@map.first_season) or is_a?(AdjustmentTurn))
+      if area.province.supply? && (is_a?(@map.first_season) || is_a?(AdjustmentTurn))
         claim_province(area.province, piece.owner)
       end
     end
@@ -378,7 +380,7 @@ module Diplomacy
     end
 
     def claim_province(province, newowner)
-      if oldowner = owner(province) and oldowner != newowner
+      if (oldowner = owner(province)) && oldowner != newowner
         game.province_captured(province, oldowner, newowner) if is_a?(AdjustmentTurn)
         oldowner.remove_province(province)
       end
@@ -389,8 +391,9 @@ module Diplomacy
       # Do nothing by default
     end
 
-    def orders_template(power_definition)
-      "" # default may be overridden
+    # Empty by default but may be overridden
+    def orders_template(_power_definition)
+      ''
     end
 
     private

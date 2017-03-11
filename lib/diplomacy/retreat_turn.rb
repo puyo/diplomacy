@@ -4,19 +4,42 @@ require 'pp'
 
 module Diplomacy
   class RetreatTurn < Turn
-    ORDER_TYPES = [RetreatOrder, DisbandOrder]
+    # --- Class ------------------------------
 
-    def next_turn_type; @prevturn.next_season end
-    def season; @prevturn.season end
-    def name; "Retreats" end
-    def type_id; "#{@prevturn.type_id}r" end
-    def next_year; @prevturn.next_year end
-    def year; @prevturn.year end
+    ORDER_TYPES = [RetreatOrder, DisbandOrder].freeze
 
     def initialize(map, prevturn)
       super(map, prevturn)
       @prevturn = prevturn
     end
+
+    # --- Queries ----------------------------
+
+    def next_turn_type
+      @prevturn.next_season
+    end
+
+    def season
+      @prevturn.season
+    end
+
+    def name
+      'Retreats'
+    end
+
+    def type_id
+      "#{@prevturn.type_id}r"
+    end
+
+    def next_year
+      @prevturn.next_year
+    end
+
+    def year
+      @prevturn.year
+    end
+
+    # --- Commands ---------------------------
 
     def next_turn
       result = next_turn_type.new(@map, self)
@@ -26,11 +49,11 @@ module Diplomacy
       orders_check
       orders_execute(result)
 
-      if @prevturn.class == Autumn and result.adjustments?
+      if @prevturn.class == Autumn && result.adjustments?
         result = AdjustmentTurn.new(@map, self, result)
         orders_execute(result)
       end
-      return result
+      result
     end
 
     def add_order(order)
@@ -43,15 +66,14 @@ module Diplomacy
 
     def orders_check
       @pieces_dislodged.each do |area, piece|
-        clashes = @pieces_dislodged.find_all do |a,p|
-          p != piece and p.order.is_a?(RetreatOrder) and p.destination == piece.destination
+        clashes = @pieces_dislodged.find_all do |_a, p|
+          p != piece && p.order.is_a?(RetreatOrder) && p.destination == piece.destination
         end
-        if !clashes.empty?
-          pieces = clashes + [[area, piece]]
-          Util.log "Clashing retreats to #{piece.destination}: #{pieces.map{|a,p| p}.join(', ')}"
-          pieces.each do |area, piece|
-            piece.order.add_result(Order::BOUNCED)
-          end
+        next if clashes.empty?
+        pieces = clashes + [[area, piece]]
+        Util.log "Clashing retreats to #{piece.destination}: #{pieces.map { |_a, p| p }.join(', ')}"
+        pieces.each do |_area, _piece|
+          piece.order.add_result(Order::BOUNCED)
         end
       end
     end
@@ -61,45 +83,43 @@ module Diplomacy
       @pieces.each do |area, piece|
         next_turn.copy_piece_to(piece, area)
       end
-      @pieces_dislodged.each do |area, piece|
+      @pieces_dislodged.each do |_area, piece|
         piece.order.execute(next_turn)
       end
     end
 
     def orders_fill
       Util.log "FILLING IN DEFAULT ORDERS FOR TURN #{self}"
-      @pieces_dislodged.each do |area, piece|
-        if piece.order.nil?
-          order = default_order(piece)
-          Util.log "  #{order}"
-          add_order(order)
-        end
+      @pieces_dislodged.each do |_area, piece|
+        next if !piece.order.nil?
+        order = default_order(piece)
+        Util.log "  #{order}"
+        add_order(order)
       end
     end
 
     def orders_validate
       Util.log "VALIDATING #{self}"
-      @pieces_dislodged.each do |area, piece|
+      @pieces_dislodged.each do |_area, piece|
         piece.order.validate
         Util.log "  #{piece.order}"
       end
     end
 
     def orders_template(power_definition)
-      result = ""
+      result = ''
       power(power_definition).pieces_dislodged.each do |piece|
-        if piece.retreats.size > 0
+        if !piece.retreats.empty?
           result << piece.type.upcase << ' ' << piece.area.location
           result << ' - '
-          result << piece.retreats.map{|a| a.location }.join(' or ')
-          result << "\n"
+          result << piece.retreats.map(&:location).join(' or ')
         else
-          result << "DISBAND "
+          result << 'DISBAND '
           result << piece.type.upcase << ' ' << piece.area.location
-          result << "\n"
         end
+        result << "\n"
       end
-      return result
+      result
     end
 
     def default_order(piece)

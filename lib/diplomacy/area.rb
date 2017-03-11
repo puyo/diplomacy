@@ -1,12 +1,12 @@
 module Diplomacy
-  # Each map province contains several abstract "areas" which define
-  # what pieces can move through that province (piece type and area
-  # type must match), where such a piece will be placed and the
-  # areas connected to it. An example of an area is St. Petersburg's
-  # North Coast ("fstpnc"), which is a fleet ("f") type area in St.
-  # Petersburg ("stp") with the ID "nc" to distinguish it from the
-  # South Coast. It is connected to different areas than St.
-  # Petersburg's South Coast ("fstpsc").
+  # Each map province contains several abstract "areas" which define what pieces
+  # can move through that province (piece type and area type must match), where
+  # such a piece will be placed and the areas connected to it. An example of an
+  # area is St. Petersburg's North Coast ("fstpnc"), which is a fleet ("f") type
+  # area in St. Petersburg ("stp") with the ID "nc" to distinguish it from the
+  # South Coast. It is connected to different areas than St. Petersburg's South
+  # Coast ("fstpsc").
+  #
   class Area
     # --- Class ------------------------------
 
@@ -17,22 +17,22 @@ module Diplomacy
 
     # --- Queries ----------------------------
 
-    attr :id
+    attr_reader :id
 
     # The piece type that can travel here.
-    attr :type
+    attr_reader :type
 
     # The province to which this area belongs.
-    attr :province
+    attr_reader :province
 
     # The areas connected to this area.
-    attr :connections
+    attr_reader :connections
 
     # Name. e.g. "North Coast"
-    attr :name
+    attr_reader :name
 
     # The coordinates for placing a piece or floodfilling.
-    attr :coordinates
+    attr_reader :coordinates
 
     def key
       @id
@@ -48,7 +48,7 @@ module Diplomacy
       namestr = @name == '' ? '' : ", #{@name}"
       "#{@province.name}#{namestr}"
     end
-    alias :to_s :label
+    alias to_s label
 
     def inspect
       "Area:<#{type.upcase} #{label}>"
@@ -66,11 +66,11 @@ module Diplomacy
     # --- Commnads ---------------------------
 
     # Distance until block returns true
-    def distance(queue=[self], visited=[], distance=0, &block)
-      while queue.size > 0
+    def distance(queue = [self], visited = [], distance = 0)
+      until queue.empty?
         newqueue = []
         queue.each do |area|
-          if block.call(area, distance)
+          if yield area, distance
             return distance
           end
           newconnections = area.connections - visited
@@ -84,7 +84,7 @@ module Diplomacy
 
     def breadth_first_search
       queue, visited, distance = [self], [], 0
-      while queue.size > 0
+      until queue.empty?
         newqueue = []
         queue.each do |area|
           yield area, distance

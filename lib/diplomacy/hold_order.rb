@@ -10,7 +10,7 @@ module Diplomacy
       super(turn, piece)
     end
 
-    def self.parse(power, match_data, mine=true)
+    def self.parse(power, match_data, mine = true)
       piece = power.turn.parse_piece(power, match_data[1], mine)
       HoldOrder.new(power.turn, piece)
     end

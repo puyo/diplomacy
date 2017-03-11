@@ -5,24 +5,37 @@ require_relative './disband_order'
 
 module Diplomacy
   class AdjustmentTurn < Turn
+    ORDER_TYPES = [BuildOrder, DisbandOrder].freeze
 
-    ORDER_TYPES = [BuildOrder, DisbandOrder]
+    def season
+      'Winter'
+    end
 
-    def season; "Winter" end
-    def name; "Adjustment" end
-    def type_id; "z" end
-    def next_year; @nextturn.year end
-    def year; @prevturn.year end
+    def name
+      'Adjustment'
+    end
+
+    def type_id
+      'z'
+    end
+
+    def next_year
+      @nextturn.year
+    end
+
+    def year
+      @prevturn.year
+    end
 
     def initialize(map, prevturn, nextturn)
       super(map, prevturn)
       @prevturn = prevturn
       @nextturn = nextturn
       @adjustments = nextturn.adjustments
-      @orders = Hash.new { |h,k| h[k] = [] }
+      @orders = Hash.new { |h, k| h[k] = [] }
     end
 
-    def orders(power=nil)
+    def orders(power = nil)
       if power
         @orders[power(power).definition]
       else
@@ -35,12 +48,12 @@ module Diplomacy
       orders_fill
       orders_validate
       orders_execute(result)
-      return result
+      result
     end
 
     def orders_execute(next_turn)
       Util.log "EXECUTING #{self} -> #{next_turn}"
-      orders.each{|o| o.execute(next_turn) }
+      orders.each { |o| o.execute(next_turn) }
     end
 
     def add_order(order)
@@ -53,12 +66,12 @@ module Diplomacy
 
     def number_of_builds(power_definition)
       diff = @adjustments[power_definition]
-      diff > 0 ? diff : 0
+      diff.positive? ? diff : 0
     end
 
     def number_of_disbands(power_definition)
       diff = @adjustments[power_definition]
-      diff < 0 ? -diff : 0
+      diff.negative? ? -diff : 0
     end
 
     def orders_fill
@@ -67,14 +80,13 @@ module Diplomacy
         orders = orders(power_definition)
         power = power(power_definition)
 
-        if diff > 0
+        if diff.positive?
           ngained = diff
           ok_orders = orders.find_all do |o|
-            o.power.definition == power_definition and
-              (o.is_a? BuildOrder or o.is_a? WaiveOrder)
+            o.power.definition == power_definition && (o.is_a?(BuildOrder) || o.is_a?(WaiveOrder))
           end
           missing = ngained - ok_orders.size
-          if missing > 0
+          if missing.positive?
             missing.times do
               order = WaiveOrder.new(power)
               Util.log "  #{order}"
@@ -84,11 +96,10 @@ module Diplomacy
         else
           nlost = -diff
           ok_orders = orders.find_all do |o|
-            o.power.definition == power_definition and
-              o.is_a? DisbandOrder
+            o.power.definition == power_definition && o.is_a?(DisbandOrder)
           end
           missing = nlost - ok_orders.size
-          unordered_pieces = power.pieces - ok_orders.map{|o| o.piece }
+          unordered_pieces = power.pieces - ok_orders.map(&:piece)
           unordered_pieces.compact!
           unordered_pieces.map! do |piece|
             distance = 0
@@ -101,9 +112,9 @@ module Diplomacy
             [distance, piece]
           end
           unordered_pieces.compact!
-          unordered_pieces = unordered_pieces.sort_by{|dist,piece| -dist }
+          unordered_pieces = unordered_pieces.sort_by { |dist, _piece| -dist }
           missing.times do
-            dist, piece, home = unordered_pieces.shift
+            dist, piece, _home = unordered_pieces.shift
             order = DisbandOrder.new(self, piece)
             Util.log "  #{order} (distance from home = #{dist})"
             add_order(order)
@@ -124,14 +135,14 @@ module Diplomacy
     end
 
     def orders_template(power_definition)
-      result = ""
+      result = ''
       number_of_builds(power_definition).times do
         result << "BUILD \n"
       end
       number_of_disbands(power_definition).times do
         result << "DISBAND \n"
       end
-      return result
+      result
     end
   end
 end

@@ -5,7 +5,13 @@ module Diplomacy
   class MovementTurn < Turn
     # --- Class ------------------------------
 
-    ORDER_TYPES = [ConvoyOrder, SupportOrder, HoldOrder, MoveOrder, ConvoyedMoveOrder]
+    ORDER_TYPES = [
+      ConvoyOrder,
+      SupportOrder,
+      HoldOrder,
+      MoveOrder,
+      ConvoyedMoveOrder
+    ].freeze
 
     def self.from_string(str, default = Spring)
       {
@@ -14,13 +20,15 @@ module Diplomacy
       }.fetch(str, default)
     end
 
-    def initialize(map, prevturn=nil)
+    def initialize(map, prevturn = nil)
       super(map, prevturn)
     end
 
     # --- Queries ----------------------------
 
-    def name; "Movement" end
+    def name
+      'Movement'
+    end
 
     def default_order(piece)
       HoldOrder.new(self, piece)
@@ -32,7 +40,7 @@ module Diplomacy
       power.pieces.each do |piece|
         result << "#{piece.type.upcase} #{piece.area.location}"
       end
-      return result.sort.join(" \n")+" \n"
+      result.sort.join(" \n") + " \n"
     end
 
     # --- Commands ---------------------------
@@ -58,29 +66,27 @@ module Diplomacy
         result = RetreatTurn.new(@map, self)
         orders_execute(result)
         result.pieces_dislodged.each do |piece|
-          occupied = piece.area.connections.reject{|a| result.piece(a.province).nil? }
+          occupied = piece.area.connections.reject { |a| result.piece(a.province).nil? }
           piece.retreats -= occupied
         end
       else
         result = next_season.new(@map, self)
         orders_execute(result)
-
-        if self.class == Autumn and result.adjustments?
+        if self.class == Autumn && result.adjustments?
           result = AdjustmentTurn.new(@map, self, result)
           orders_execute(result)
         end
       end
-
-      return result
+      result
     end
 
     def orders_execute(next_turn)
       Util.log "EXECUTING #{self} -> #{next_turn}"
-      orders.each{|o| o.execute(next_turn) }
+      orders.each { |o| o.execute(next_turn) }
     end
 
     def dislodgements?
-      !orders.find{|o| o.dislodged?}.nil?
+      orders.any?(&:dislodged?)
     end
 
     def order_validated(order)
@@ -90,10 +96,10 @@ module Diplomacy
     end
 
     def orders_check_bounces
-      Util.log "CHECK BOUNCES"
-      orders.sort{|a,b| b.piece.strength <=> a.piece.strength }.each do |order|
+      Util.log 'CHECK BOUNCES'
+      orders.sort { |a, b| b.piece.strength <=> a.piece.strength }.each do |order|
         if order.successful?
-          if not order.checked
+          if !order.checked
             order.check
           else
             Util.log "#{order}: Already checked, skipping..."
@@ -103,35 +109,56 @@ module Diplomacy
     end
 
     def orders_check_convoys
-      Util.log "CHECK CONVOYS"
-      orders.each do |o| 
+      Util.log 'CHECK CONVOYS'
+      orders.each do |o|
         o.check_disruptions if o.successful?
       end
     end
 
     def orders_cut_supports
-      Util.log "CUT SUPPORTS"
-      orders.each{|o| o.cut_support }
+      Util.log 'CUT SUPPORTS'
+      orders.each(&:cut_support)
     end
 
     def orders_tally_strengths
-      Util.log "TALLY STRENGTHS"
-      orders.each{|o| o.tally_strength }
+      Util.log 'TALLY STRENGTHS'
+      orders.each(&:tally_strength)
     end
   end
 
   class Spring < MovementTurn
-    def season; "Spring" end
-    def type_id; "s1" end
-    def next_season; Autumn end
-    def next_year; @year end
+    def season
+      'Spring'
+    end
+
+    def type_id
+      's1'
+    end
+
+    def next_season
+      Autumn
+    end
+
+    def next_year
+      @year
+    end
   end
 
   class Autumn < MovementTurn
-    def season; "Autumn" end
-    def type_id; "s2" end
-    def next_season; Spring end
-    def next_year; @year + 1 end
-  end
+    def season
+      'Autumn'
+    end
 
+    def type_id
+      's2'
+    end
+
+    def next_season
+      Spring
+    end
+
+    def next_year
+      @year + 1
+    end
+  end
 end

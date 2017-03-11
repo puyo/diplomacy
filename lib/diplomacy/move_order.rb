@@ -19,20 +19,22 @@ module Diplomacy
 
     # --- Queries ----------------------------
 
-    attr :destination
+    attr_reader :destination
 
-    def home; @piece.area.province end
+    def home
+      @piece.area.province
+    end
 
     def attacking_self?
-      target and target.owner == @piece.owner and not target.moving?
+      target && target.owner == @piece.owner && !target.moving?
     end
 
     def string
-      "#{piece} - #{destination}"
+      [piece, destination].join(' - ')
     end
 
     def text
-      "#{piece.id.upcase} - #{destination.location.upcase}"
+      [piece.id, destination.location].join(' - ').upcase
     end
 
     def target
@@ -48,10 +50,9 @@ module Diplomacy
 
     def check_swap_bounce
       Util.log "#{@piece}: Checking for swap bounces..."
-      if target and target.moving? and
-        target.destination.province == @piece.area.province and
-        target.strength >= @piece.strength
-      then
+      if target && target.moving? &&
+         target.destination.province == @piece.area.province &&
+         target.strength >= @piece.strength
         Util.log "#{@piece} (#{@piece.strength}) swap-bounced off #{target} (#{target.strength})"
         @piece.bounce
       end
@@ -60,8 +61,8 @@ module Diplomacy
     def check_weak_bounce
       Util.log "#{@piece}: Checking for weak bounces..."
       opponents = @turn.opponents(destination.province, @piece)
-      if opponents.size > 0
-        summary = opponents.map{|a| "#{a} (#{a.strength})"}.join(', ')
+      if !opponents.empty?
+        summary = opponents.map { |a| "#{a} (#{a.strength})" }.join(', ')
         Util.log "#{@piece} (#{@piece.strength}) bounced off #{summary} in #{destination}"
         @piece.bounce
       elsif attacking_self?
@@ -73,13 +74,13 @@ module Diplomacy
     end
 
     def dislodge_piece(target, attackers)
-      fail if attackers.size != @piece.strength
+      raise if attackers.size != @piece.strength
       Util.log "#{attackers.join(', ')} (#{attackers.size}) PUSH #{target} (#{target.strength})"
-      attacked_from = attackers.map{|a| a.area.province }
+      attacked_from = attackers.map { |a| a.area.province }
       if approaching?(target, @piece)
         @turn.remove_contender(@piece.area.province, target)
         target.dislodge(attacked_from)
-      elsif not target.moving?
+      elsif !target.moving?
         target.dislodge(attacked_from)
       end
     end
@@ -94,21 +95,20 @@ module Diplomacy
         opponents = @turn.opponents(@piece.area.province, @piece)
         opponents.each do |op|
           Util.log "#{@piece}: Rechecking #{op}..."
-          if op.order and not op.order.successful?
-            op.order.check 
+          if op.order && !op.order.successful?
+            op.order.check
           end
         end
       end
     end
-    
+
     def cut_support
       Util.log "#{piece} cutting supports..."
-      if successful? and
-        target and
-        target.order.kind_of?(SupportOrder) and
-        target.owner != @piece.owner and
-        target.order.supported_piece.destination.province != attacking_from
-      then
+      if successful? &&
+         target &&
+         target.order.is_a?(SupportOrder) &&
+         target.owner != @piece.owner &&
+         target.order.supported_piece.destination.province != attacking_from
         Util.log "Support from #{target} cut by #{@piece}"
         target.order.add_result(CUT)
         target.order.supported_piece.remove_support(target)
@@ -129,7 +129,7 @@ module Diplomacy
     end
 
     def unreachable?
-      not @piece.area.connections.include?(@destination)
+      !@piece.area.connections.include?(@destination)
     end
 
     def validate

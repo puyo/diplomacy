@@ -11,8 +11,8 @@ module Diplomacy
       @power = power
     end
 
-    def self.parse(power, match_data, mine=true)
-      self.new(power)
+    def self.parse(power, _match_data, _mine = true)
+      new(power)
     end
 
     # --- Queries ----------------------------
@@ -24,7 +24,7 @@ module Diplomacy
     end
 
     def text
-      "WAIVE"
+      'WAIVE'
     end
 
     # --- Commands ---------------------------

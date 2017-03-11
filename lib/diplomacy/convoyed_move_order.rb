@@ -11,25 +11,25 @@ module Diplomacy
       super(turn, piece, destination)
     end
 
-    def self.parse(power, match_data, mine=true)
+    def self.parse(power, match_data, mine = true)
       parts = match_data[0].split(/-/)
       piece = power.turn.parse_piece(power, parts.shift, mine)
       destination = power.turn.map.parse_area(parts.pop, piece.type)
-      path = parts.map{|p| power.turn.map.parse_area(p.strip, "f")} # hard coding...
+      path = parts.map { |p| power.turn.map.parse_area(p.strip, 'f') } # hard coding...
       ConvoyedMoveOrder.new(power.turn, piece, path, destination)
     end
 
     # --- Queries ----------------------------
 
-    attr :path
-    attr :destination
+    attr_reader :path
+    attr_reader :destination
 
     def string
       "#{@piece} - #{@path.join(' - ')} - #{@destination}"
     end
 
     def text
-      "#{@piece.id.upcase} - #{@path.map{|a| a.location}.join(' - ').upcase} - #{@destination.location.upcase}"
+      [@piece.id, @path.map(&:location).join(' - '), @destination.location].join(' - ').upcase
     end
 
     # --- Commands ---------------------------
@@ -47,29 +47,27 @@ module Diplomacy
       @path.each do |area|
         opponents = @turn.opponents(area.province, @piece)
         opponents.delete_if do |o|
-          o.order.kind_of?(ConvoyOrder) and
-            o.order.piece_convoyed == @piece
+          o.order.is_a?(ConvoyOrder) && o.order.piece_convoyed == @piece
         end
-        if opponents.size > 0
-          Util.log "Convoy #{@piece} attacked by #{opponents.join(', ')}"
-          add_result(CONVOY_ATTACKED)
-          notify_convoys
-          return
-        end
+        next if opponents.empty?
+        Util.log "Convoy #{@piece} attacked by #{opponents.join(', ')}"
+        add_result(CONVOY_ATTACKED)
+        notify_convoys
+        break
       end
     end
 
-    def approaching?(a, b)
+    def approaching?(_, _)
       false
     end
 
     def validate
       last = piece.area
       @path.each do |area|
-        if not convoy = @turn.piece(area)
+        if !(convoy = @turn.piece(area))
           Util.log "No convoy available from #{last} to #{area}."
           add_result(FAILED)
-        elsif not convoy.order.is_a? ConvoyOrder
+        elsif !convoy.order.is_a?(ConvoyOrder)
           Util.log "Convoy '#{convoy}' is not convoying for move '#{self}'. Its order is #{convoy.order.class}"
           add_result(FAILED)
         elsif convoy.order.piece_convoyed != @piece
@@ -84,18 +82,22 @@ module Diplomacy
     end
 
     def notify_convoys
-      if not @piece.order.successful?
+      if !@piece.order.successful?
         @piece.supports.clear
         @path.each do |area|
-          if convoy = @turn.piece(area) and convoy.order == ConvoyOrder and convoy.order.piece_convoyed == @piece
-            Util.log "Notifying convoy #{convoy} of #{self} failure"
-            convoy.add_result(FAILED)
+          convoy = @turn.piece(area)
+          if !(convoy &&
+               convoy.order == ConvoyOrder &&
+               convoy.order.piece_convoyed == @piece)
+            next
           end
+          Util.log "Notifying convoy #{convoy} of #{self} failure"
+          convoy.add_result(FAILED)
         end
       end
     end
 
-    def convoy_dislodged(convoy)
+    def convoy_dislodged(_convoy)
       add_result(FAILED)
       notify_convoys
     end

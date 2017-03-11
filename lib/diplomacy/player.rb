@@ -3,7 +3,7 @@ module Diplomacy
   class Player
     # Prompt, notifying the player that there is a new game state
     # to examine and submit orders for.
-    def request_orders(game, power)
+    def request_orders(_game, _power)
       raise Error, "Player#request_orders must be implemented in class #{self.class}"
     end
   end

@@ -11,15 +11,15 @@ module Diplomacy
       @destination = destination
     end
 
-    def self.parse(power, match_data, mine=true)
+    def self.parse(power, match_data, mine = true)
       piece = power.turn.parse_dislodged_piece(power, match_data[1], mine)
       destination = power.turn.map.parse_area(match_data[2], piece.type)
-      self.new(power.turn, piece, destination)
+      new(power.turn, piece, destination)
     end
 
     # --- Queries ----------------------------
 
-    attr :destination
+    attr_reader :destination
 
     def string
       "#{piece} - #{destination}"
@@ -42,11 +42,11 @@ module Diplomacy
     end
 
     def unreachable?
-      not @piece.area.connections.include?(@destination)
+      !@piece.area.connections.include?(@destination)
     end
 
     def cannot_retreat_there?
-      not @piece.retreats.include?(@destination)
+      !@piece.retreats.include?(@destination)
     end
 
     def validate

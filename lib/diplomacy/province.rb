@@ -14,34 +14,34 @@ module Diplomacy
 
     # --- Queries ----------------------------
 
-    attr :map
+    attr_reader :map
 
     # Name. e.g. "Liverpool"
-    attr :name
+    attr_reader :name
 
     # Unique string ID among provinces. e.g. "lpl"
-    attr :id
+    attr_reader :id
 
     # Coordinates of the supply depot for this province, if there is
     # one (otherwise nil).
-    attr :supply
+    attr_reader :supply
 
-    attr :start_owner
+    attr_reader :start_owner
 
-    alias :to_s :name
+    alias to_s name
 
     def supply?
-      not @supply.nil?
+      !@supply.nil?
     end
-    alias :supply_centre? :supply?
-    alias :supply_center? :supply?
+    alias supply_centre? supply?
+    alias supply_center? supply?
 
     def inspect
-      "Province:<#{to_s}>"
+      "Province:<#{self}>"
     end
 
     # List of all areas in this province.
-    def areas(type=nil)
+    def areas(type = nil)
       if type
         if areas = @areas[type]
           areas.values
@@ -49,12 +49,12 @@ module Diplomacy
           []
         end
       else
-        @areas.values.map{|a| a.values }.flatten
+        @areas.values.map(&:values).flatten
       end
     end
 
     def area(type, key)
-      @areas[type] and @areas[type][key.downcase]
+      @areas[type] && @areas[type][key.downcase]
     end
 
     # The province name and ID.
@@ -67,11 +67,9 @@ module Diplomacy
     # but easier than specifying them in the definition file.)
     def label_coordinates
       @map.types.each do |type|
-        if areas = areas(type)
-          areas.each do |area|
-            if area.name == ''
-              return area.coordinates[0]
-            end
+        areas(type)&.each do |area|
+          if area.name == ''
+            return area.coordinates[0]
           end
         end
       end
@@ -85,9 +83,9 @@ module Diplomacy
         # TODO: This is a hack so that only land is painted.
         # Fix this up with a mapping in from type => col the
         # XML file.
-        result |= a.coordinates if a.type == "a"
+        result |= a.coordinates if a.type == 'a'
       end
-      return result
+      result
     end
 
     # The coordinates at which to place the piece on this area if
@@ -99,7 +97,7 @@ module Diplomacy
           return result
         end
       end
-      return nil
+      nil
     end
 
     # A map of area IDs to areas (without duplicating areas which
@@ -111,11 +109,11 @@ module Diplomacy
           result[area.id.downcase] = area
         end
       end
-      return result.values
+      result.values
     end
 
     def adjacent_provinces
-      areas.map{|a| a.connections.map{|c| c.province } }.flatten.uniq
+      areas.map { |a| a.connections.map(&:province) }.flatten.uniq
     end
 
     # --- Commands ---------------------------
@@ -128,7 +126,7 @@ module Diplomacy
 
     def breadth_first_search
       queue, visited, distance = [self], [], 0
-      while queue.size > 0
+      until queue.empty?
         newqueue = []
         queue.each do |province|
           yield province, distance

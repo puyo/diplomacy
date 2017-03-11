@@ -231,10 +231,10 @@ class Diplomacy::Game
     outpath = turn_image_path(turn)
     return if File.exist?(outpath)
 
-    result = loadPNG(map.base_path)
-    supply_icon = loadPNG(supply_icon_path)
+    result = load_png(map.base_path)
+    supply_icon = load_png(supply_icon_path)
     piece_icons = {}
-    map.types.each{|type| piece_icons[type] = loadPNG(piece_icon_path(type)) }
+    map.types.each{|type| piece_icons[type] = load_png(piece_icon_path(type)) }
 
     paint_provinces(turn, result)
     paint_arrows(turn, result) if turn != current_turn and turn.is_a?(Diplomacy::MovementTurn)
@@ -242,21 +242,21 @@ class Diplomacy::Game
     paint_labels(turn, result, piece_icons)
 
     Dir.mkdir(turn_images_path) unless FileTest.directory?(turn_images_path)
-    savePNG(result, outpath)
+    save_png(result, outpath)
     result.destroy
   end
 
   private
 
-  def loadPNG(path)
+  def load_png(path)
     File.open(path, 'rb') do |f|
       Util.log "Reading '#{path}'..."
       return GD::Image.newFromPng(f)
     end
   end
 
-  def savePNG(image, path)
-    File.open(path, "wb") do |f|
+  def save_png(image, path)
+    File.open(path, 'wb') do |f|
       Util.log "Writing '#{path}'..."
       image.png(f)
     end

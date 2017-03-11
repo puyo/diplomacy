@@ -13,19 +13,19 @@ module Diplomacy
 
     def self.parse(power, match_data, mine)
       piece = power.turn.parse_piece(power, match_data[1], mine)
-      #			order = power.turn.parse_order(power, match_data[2], false)
+      # order = power.turn.parse_order(power, match_data[2], false)
       supported_piece = power.turn.parse_piece(power, match_data[2], false)
       SupportOrder.new(power.turn, piece, supported_piece)
     end
 
     # --- Queries ----------------------------
 
-    attr :supported_piece
+    attr_reader :supported_piece
 
     def attacking_self?
-      supported_piece.moving? and
-        supported_piece.order.target and
-        supported_piece.order.target.owner == piece.owner and
+      supported_piece.moving? &&
+        supported_piece.order.target &&
+        supported_piece.order.target.owner == piece.owner &&
         !supported_piece.order.target.moving?
     end
 
@@ -38,14 +38,13 @@ module Diplomacy
     end
 
     def support_attack_on_self?
-      target = supported_piece.destination.piece and
-        target.owner == piece.owner
+      (target = supported_piece.destination.piece) && target.owner == piece.owner
     end
 
     def unreachable?
-      provinces = piece.area.connections.map{|a| a.province }
+      provinces = piece.area.connections.map(&:province)
       dest = supported_piece.destination.province
-      not provinces.include?(dest)
+      !provinces.include?(dest)
     end
 
     def piece?
@@ -53,7 +52,7 @@ module Diplomacy
     end
 
     def orders_match?
-      #			supported.piece.order == supported
+      # supported.piece.order == supported
       true
     end
 
@@ -85,11 +84,11 @@ module Diplomacy
         add_result(IMPOSSIBLE)
         Util.log "Attempt by piece to support itself, with order '#{self}'"
       end
-      if not piece?
+      if !piece?
         add_result(IMPOSSIBLE)
         Util.log "Attempt to support non-existant piece, with order '#{self}'"
       end
-      if not orders_match?
+      if !orders_match?
         add_result(IMPOSSIBLE)
         Util.log "Supported piece's order does not match support order '#{self}'"
       end
@@ -102,5 +101,5 @@ module Diplomacy
         Util.log "Supporting piece cannot support attack on friendly unit in support order '#{self}'"
       end
     end
-	end
+  end
 end

@@ -12,11 +12,11 @@ module Diplomacy
       @piece_convoyed.convoys << piece
     end
 
-    def self.parse(power, match_data, mine=true)
+    def self.parse(power, match_data, mine = true)
       piece = power.turn.parse_piece(power, match_data[1], mine)
       piece_convoyed = power.turn.parse_piece(power, match_data[2], false)
       piece_destination = power.turn.map.parse_area(match_data[3], piece_convoyed.type)
-      return ConvoyOrder.new(power.turn, piece, piece_convoyed, piece_destination)
+      ConvoyOrder.new(power.turn, piece, piece_convoyed, piece_destination)
     end
 
     # --- Queries ----------------------------
@@ -38,7 +38,7 @@ module Diplomacy
     # --- Commands ---------------------------
 
     def validate
-      if not @piece_convoyed
+      if !@piece_convoyed
         puts "Invalid convoy order '#{text}'. No piece to convoy."
         add_result(FAILED)
       end
