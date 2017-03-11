@@ -134,4 +134,9 @@ module Diplomacy
       super(map, prevturn)
     end
   end
+
+  TURN_TYPES = {
+    'Spring' => Spring,
+    'Autumn' => Autumn,
+  }
 end
