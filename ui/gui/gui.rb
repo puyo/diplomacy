@@ -443,7 +443,7 @@ module GUI
 			@frame.setLayoutHints(LAYOUT_FILL_BOTH)
 		end
 		def method_missing(m, *args)
-			eval("@scrollWindow.#{m}(*args)")
+			@scrollWindow.send(m, *args)
 		end
 	end
 
