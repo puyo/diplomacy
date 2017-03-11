@@ -119,21 +119,3 @@ module Diplomacy
     end
   end
 end
-
-if $0 == __FILE__
-  include Diplomacy
-
-  game = Game.new('test', 'standard', 'resources')
-  game.start
-
-  france = game.power('f')
-  game.turn.submit_orders france, %{
-    a par - pic
-    f bre s a par - pic
-  }
-  puts game.turn
-  game.judge
-  puts game.turn
-  game.judge
-  puts game.turn
-end
