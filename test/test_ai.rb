@@ -38,9 +38,9 @@ class AITest < Test::Unit::TestCase
     assert_equal Spring, turn.class
     game.judge
     game.judge
-    game.judge
-    game.judge
-    game.judge
+    # game.judge
+    # game.judge
+    # game.judge
   end
 
   def test_directorful
@@ -50,8 +50,8 @@ class AITest < Test::Unit::TestCase
     assert_equal Spring, turn.class
     game.judge
     game.judge
-    game.judge
-    game.judge
+    # game.judge
+    # game.judge
   end
 
   def x_test_directorful_infinite
