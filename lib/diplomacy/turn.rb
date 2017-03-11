@@ -51,7 +51,6 @@ module Diplomacy
 
     attr_reader :map, :year
     attr_accessor :year
-
     attr_accessor :game
 
     def current?
@@ -325,7 +324,7 @@ module Diplomacy
         raise Error, e.message, e.backtrace
       end
 
-      if Game.nice_mode
+      if @game && @game.nice_mode
         ok = true
         orders.each do |order|
           order.validate

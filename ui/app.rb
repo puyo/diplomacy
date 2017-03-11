@@ -48,7 +48,6 @@ class DiplomacyApp < GUI::App
     puts "Continuing survey #{id}..."
 
     begin
-      
       data = survey_data(id)
 
       @player = Diplomacy::Human.new
@@ -59,8 +58,7 @@ class DiplomacyApp < GUI::App
       @game.name = data[:game_name]
       mainWindow.title = "Diplomacy: #{@game.name}"
 
-      Diplomacy::Game.director_mode = !data[:director_for_first_game]
-#     puts "Director mode for this game = #{Diplomacy::Game.director_mode}"
+      @game.director_mode = !data[:director_for_first_game]
 
     rescue Errno::ENOENT => e
       msg = [
@@ -85,14 +83,13 @@ class DiplomacyApp < GUI::App
   end
 
   def randomly_include_director
-    Diplomacy::Game.director_mode = rand(2) == 0 ? true : false
-#   puts "Director mode for this game = #{Diplomacy::Game.director_mode}"
+    @game.director_mode = rand(2) == 0 ? true : false
   end
 
   def store_survey_data(power)
     path = File.expand_path(File.join(results_dir, @game.name))
     puts "Writing survey data to '#{path}'..."
-    data = {:director_for_first_game => Diplomacy::Game.director_mode, :power => power.name, :game_name => @game.name }
+    data = {:director_for_first_game => @game.director_mode, :power => power.name, :game_name => @game.name }
     File.open(path, 'wb') do |f|
       f.write Marshal.dump(data)
     end

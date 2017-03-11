@@ -12,32 +12,15 @@ module Diplomacy
 
     # --- Class ------------------------------
 
-    @@nice_mode = true
-    @@director_mode = true
-
     # Create a game
     def initialize(name:, map: Map.new)
       @name = name
       @map = map
       @piece_icon_id = @supply_icon_id = @map.id
+      @director_mode = false
+      @nice_mode = false
       @director = nil
       @turns = []
-    end
-
-    def self.nice_mode
-      @@nice_mode
-    end
-
-    def self.nice_mode=(value)
-      @@nice_mode = value
-    end
-
-    def self.director_mode
-      @@director_mode
-    end
-
-    def self.director_mode=(value)
-      @@director_mode = value
     end
 
     # --- Queries ----------------------------
@@ -56,12 +39,15 @@ module Diplomacy
 
     # --- Commands ---------------------------
 
+    attr_accessor :director_mode
+    attr_accessor :nice_mode
+
     def name=(value)
       @name = value
     end
 
     def start(bots=true, nice=true)
-      Game.nice_mode = nice
+      self.nice_mode = nice
       first_turn = @map.first_turn.dup
       first_turn.game = self
       @turns.push first_turn
@@ -81,7 +67,7 @@ module Diplomacy
 
     def start_director
       human_power = turn.powers.find{|p| p.definition.player.is_a?(Human) }
-      if Game.director_mode and !human_power.nil?
+      if director_mode and !human_power.nil?
         @director = Director.new(self, human_power.definition)
       end
     end
