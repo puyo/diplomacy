@@ -118,10 +118,6 @@ module Diplomacy
     def type_id; "s1" end
     def next_season; Autumn end
     def next_year; @year end
-
-    def initialize(map, prevturn=nil)
-      super(map, prevturn)
-    end
   end
 
   class Autumn < MovementTurn
@@ -129,10 +125,6 @@ module Diplomacy
     def type_id; "s2" end
     def next_season; Spring end
     def next_year; @year + 1 end
-
-    def initialize(map, prevturn=nil)
-      super(map, prevturn)
-    end
   end
 
   TURN_TYPES = {
