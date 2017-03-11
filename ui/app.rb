@@ -4,160 +4,160 @@ require 'startmenu'
 require 'game'
 
 class DiplomacyApp < GUI::App
-	include GUI
+  include GUI
 
-	TITLE = 'Diplomacy'
-	VENDOR = 'Greg McIntyre'
-	ABOUT = "#{TITLE} Judge and AI (c) 2003 #{VENDOR}\n Diplomacy (c) Avalon Hill Game Company, 1979"
+  TITLE = 'Diplomacy'
+  VENDOR = 'Greg McIntyre'
+  ABOUT = "#{TITLE} Judge and AI (c) 2003 #{VENDOR}\n Diplomacy (c) Avalon Hill Game Company, 1979"
 
-	attr :game, :player
+  attr :game, :player
 
-	def initialize(game)
-		super(TITLE, VENDOR)
-		init(ARGV)
+  def initialize(game)
+    super(TITLE, VENDOR)
+    init(ARGV)
 
-		@game = game
-		@player = nil
-		@power = nil
+    @game = game
+    @player = nil
+    @power = nil
 
-		create
+    create
 
-		@start.show
+    @start.show
 
-		puts "Running..."
-		run
-	end
+    puts "Running..."
+    run
+  end
 
-	def create
-		puts 'Creating GUI...'
-		@start = StartMenu.new(self)
-		main = GameWindow.new(self)
+  def create
+    puts 'Creating GUI...'
+    @start = StartMenu.new(self)
+    main = GameWindow.new(self)
 
-		@game.connect(:start, self, :game_started)
+    @game.connect(:start, self, :game_started)
 
-		super
-	end
+    super
+  end
 
-	def new_survey
-		@choose = ChoosePower.new(self)
-		@choose.create
-		@choose.show
-	end
+  def new_survey
+    @choose = ChoosePower.new(self)
+    @choose.create
+    @choose.show
+  end
 
-	def continue_survey(id)
-		puts "Continuing survey #{id}..."
+  def continue_survey(id)
+    puts "Continuing survey #{id}..."
 
-		begin
-			
-			data = survey_data(id)
+    begin
+      
+      data = survey_data(id)
 
-			@player = Diplomacy::Human.new
-			power_name = data[:power]
-			@power = game.map.power_definitions.find{|p| p.name == power_name }
-			puts "Starting game with power '#{@power.name}'..."
+      @player = Diplomacy::Human.new
+      power_name = data[:power]
+      @power = game.map.power_definitions.find{|p| p.name == power_name }
+      puts "Starting game with power '#{@power.name}'..."
 
-			@game.name = data[:game_name]
-			mainWindow.title = "Diplomacy: #{@game.name}"
+      @game.name = data[:game_name]
+      mainWindow.title = "Diplomacy: #{@game.name}"
 
-			Diplomacy::Game.director_mode = !data[:director_for_first_game]
-#			puts "Director mode for this game = #{Diplomacy::Game.director_mode}"
+      Diplomacy::Game.director_mode = !data[:director_for_first_game]
+#     puts "Director mode for this game = #{Diplomacy::Game.director_mode}"
 
-		rescue Errno::ENOENT => e
-			msg = [
-				"Invalid survey ID"
-			]
-			ErrorDialog.new(mainWindow, msg).execute
-			@start.show
-			return
+    rescue Errno::ENOENT => e
+      msg = [
+        "Invalid survey ID"
+      ]
+      ErrorDialog.new(mainWindow, msg).execute
+      @start.show
+      return
 
-		rescue StandardError => e
-			msg = [
-				"Could not continue survey: ",
-				e.message,
-			]
-			msg += e.backtrace
-			ErrorDialog.new(mainWindow, msg).execute
-			@start.show
-			return
-		end
+    rescue StandardError => e
+      msg = [
+        "Could not continue survey: ",
+        e.message,
+      ]
+      msg += e.backtrace
+      ErrorDialog.new(mainWindow, msg).execute
+      @start.show
+      return
+    end
 
-		start_game
-	end
+    start_game
+  end
 
-	def randomly_include_director
-		Diplomacy::Game.director_mode = rand(2) == 0 ? true : false
-#		puts "Director mode for this game = #{Diplomacy::Game.director_mode}"
-	end
+  def randomly_include_director
+    Diplomacy::Game.director_mode = rand(2) == 0 ? true : false
+#   puts "Director mode for this game = #{Diplomacy::Game.director_mode}"
+  end
 
-	def store_survey_data(power)
-		path = File.expand_path(File.join(results_dir, @game.name))
-		puts "Writing survey data to '#{path}'..."
-		data = {:director_for_first_game => Diplomacy::Game.director_mode, :power => power.name, :game_name => @game.name }
-		File.open(path, 'wb') do |f|
-			f.write Marshal.dump(data)
-		end
-		return data
-	end
+  def store_survey_data(power)
+    path = File.expand_path(File.join(results_dir, @game.name))
+    puts "Writing survey data to '#{path}'..."
+    data = {:director_for_first_game => Diplomacy::Game.director_mode, :power => power.name, :game_name => @game.name }
+    File.open(path, 'wb') do |f|
+      f.write Marshal.dump(data)
+    end
+    return data
+  end
 
-	def results_dir
-		File.join(File.dirname(__FILE__), '..', 'results')
-	end
+  def results_dir
+    File.join(File.dirname(__FILE__), '..', 'results')
+  end
 
-	def survey_data(id)
-		path = File.expand_path(File.join(results_dir, "survey#{id}"))
-		puts "Reading survey data from '#{path}'..."
-		data = nil
-		File.open(path, 'rb') do |f|
-			data = Marshal.load(f)
-		end
-		return data
-	end
+  def survey_data(id)
+    path = File.expand_path(File.join(results_dir, "survey#{id}"))
+    puts "Reading survey data from '#{path}'..."
+    data = nil
+    File.open(path, 'rb') do |f|
+      data = Marshal.load(f)
+    end
+    return data
+  end
 
-	def power_selected(power)
-		puts "Selected power '#{power}'..."
-		@player = Diplomacy::Human.new
-		@power = power
+  def power_selected(power)
+    puts "Selected power '#{power}'..."
+    @player = Diplomacy::Human.new
+    @power = power
 
-		randomly_include_director
-		store_survey_data(power)
+    randomly_include_director
+    store_survey_data(power)
 
-		start_game
+    start_game
 
-		survey_id_alert
-	end
+    survey_id_alert
+  end
 
-	# Pop up a dialog box requesting the user enter their survey ID number.
-	def survey_id_alert
-		id = @game.name.match(/survey(\d+)/)[-1]
-		puts "Survey ID = #{id}"
-		survey_id_alert = ConfirmDialog.new mainWindow, "Record Survey ID", %{
+  # Pop up a dialog box requesting the user enter their survey ID number.
+  def survey_id_alert
+    id = @game.name.match(/survey(\d+)/)[-1]
+    puts "Survey ID = #{id}"
+    survey_id_alert = ConfirmDialog.new mainWindow, "Record Survey ID", %{
 Please write down the following number on your survey and
 click OK to proceed: #{id}
 }
-		survey_id_alert.execute
-	end
+    survey_id_alert.execute
+  end
 
-	def start_game
-		mainWindow.power_selected(@power)
-		@power.player = @player
-		@game.start
-		mainWindow.game_started
-		mainWindow.show(PLACEMENT_SCREEN)
-	end
+  def start_game
+    mainWindow.power_selected(@power)
+    @power.player = @player
+    @game.start
+    mainWindow.game_started
+    mainWindow.show(PLACEMENT_SCREEN)
+  end
 
-	def orders_submitted(orders)
-		begin
-			puts "Submitting orders for #{@game.turn}:"
-			puts orders
-			power = @game.turn.power(@power)
-			power.submit_orders(orders)
-			mainWindow.orders.text = ''
-			mainWindow.orders.setFocus
+  def orders_submitted(orders)
+    begin
+      puts "Submitting orders for #{@game.turn}:"
+      puts orders
+      power = @game.turn.power(@power)
+      power.submit_orders(orders)
+      mainWindow.orders.text = ''
+      mainWindow.orders.setFocus
 
-		rescue Exception, Diplomacy::Error => e
-			msg = [
-				e.message,
-				%{
+    rescue Exception, Diplomacy::Error => e
+      msg = [
+        e.message,
+        %{
 A problem was encountered with your orders. Please examine and
 re-submit them. The following are examples of valid orders:
 
@@ -243,18 +243,18 @@ WAIVE ORDERS
 
   This is the default order for adjustment turns.
 }
-			]
-			ErrorDialog.new(mainWindow, msg).execute
-			return
-		end
+      ]
+      ErrorDialog.new(mainWindow, msg).execute
+      return
+    end
 
-		begin
-			@game.judge
-			mainWindow.game_advanced(@game)
-			puts "Successful!"
-		rescue Diplomacy::Error => e
-			d = ErrorDialog.new(mainWindow, e.message)
-			d.execute
-		end
-	end
+    begin
+      @game.judge
+      mainWindow.game_advanced(@game)
+      puts "Successful!"
+    rescue Diplomacy::Error => e
+      d = ErrorDialog.new(mainWindow, e.message)
+      d.execute
+    end
+  end
 end
