@@ -237,21 +237,21 @@ module Diplomacy
         owner.add_province(province)
       end
       if e = element.elements["piece"]
-        type = e.attribute("type")
+        type = e.attribute("type").to_s
         area_id = province.id + e.attribute("area").to_s
         owner.make_piece("#{type} #{area_id}")
       end
     end
 
     def input_area(province, element)
-      id = element.attribute("id", "").to_s.downcase
+      id = element.attribute("id").to_s.downcase
       type = element.attribute("type").to_s.downcase
       connections = element.attribute("connections").to_s.split(/ /)
       coordinates = element.attribute("pos").to_s.split(/ /).map{|c| c.split(/,/).map{|x| x.to_i} }
       if coordinates.size == 0
         raise Error, "Area '#{id}' in province '#{province.id}' (#{type}) must have attribute 'pos' with coordinates for placing a piece and floodfilling."
       end
-      area_name = element.attribute("name", "")
+      area_name = element.attribute("name").to_s
       area = Area.new(type, id, area_name, province, connections, coordinates)
       province.add_area(area)
     end

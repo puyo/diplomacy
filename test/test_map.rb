@@ -28,21 +28,22 @@ class MapTest < Test::Unit::TestCase
     end
     assert_equal map.parse_province("St. Petersburg").name, "St. Petersburg"
   end
+
   def test_parse_area
-    assert_equal map.parse_area("a tus").label, "Tuscany"
-    assert_equal map.parse_area("St. Petersburg South Coast").label, "St. Petersburg, South Coast"
-    assert_equal map.parse_area("St. Petersburg/sc").label, "St. Petersburg, South Coast"
-    assert_equal map.parse_area("St. Petersburgsc").label, "St. Petersburg, South Coast"
-    assert_equal map.parse_area("St. Petersburgsc").label, "St. Petersburg, South Coast"
-    assert_equal map.parse_area("StPsc").label, "St. Petersburg, South Coast"
-    assert_equal map.parse_area("StP/sc").label, "St. Petersburg, South Coast"
-    assert_equal map.parse_area("StP(sc)").label, "St. Petersburg, South Coast"
-    assert_equal map.parse_area("StP(south coast)").label, "St. Petersburg, South Coast"
-    assert_equal map.parse_area("StP(south)").label, "St. Petersburg, South Coast"
-    assert_equal map.parse_area("StP_sc").label, "St. Petersburg, South Coast"
-    assert_equal map.parse_area("St. Petersburg South Coast").key, 'sc'
+    assert_equal("Tuscany", map.parse_area("a tus").label)
+    assert_equal("St. Petersburg, South Coast", map.parse_area("St. Petersburg South Coast").label)
+    assert_equal("St. Petersburg, South Coast", map.parse_area("St. Petersburg/sc").label)
+    assert_equal("St. Petersburg, South Coast", map.parse_area("St. Petersburgsc").label)
+    assert_equal("St. Petersburg, South Coast", map.parse_area("St. Petersburgsc").label)
+    assert_equal("St. Petersburg, South Coast", map.parse_area("StPsc").label)
+    assert_equal("St. Petersburg, South Coast", map.parse_area("StP/sc").label)
+    assert_equal("St. Petersburg, South Coast", map.parse_area("StP(sc)").label)
+    assert_equal("St. Petersburg, South Coast", map.parse_area("StP(south coast)").label)
+    assert_equal("St. Petersburg, South Coast", map.parse_area("StP(south)").label)
+    assert_equal("St. Petersburg, South Coast", map.parse_area("StP_sc").label)
+    assert_equal('sc', map.parse_area("St. Petersburg South Coast").key)
     assert_raises Diplomacy::Error, "Did not raise error on ambiguous text" do
-      area = map.parse_area("rum")
+      map.parse_area("rum")
     end
   end
 
