@@ -1,4 +1,7 @@
 # frozen_string_literal: true
-source "https://rubygems.org"
 
-gem "fxruby"
+source 'https://rubygems.org'
+
+gem 'fxruby'
+gem 'gd'
+gem 'pry-byebug'
