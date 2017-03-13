@@ -12,7 +12,7 @@ module Diplomacy
       IMPOSSIBLE = 'impossible'.freeze,
     ].freeze
 
-    def initialize(turn)
+    def initialize(turn:)
       @turn = turn
       @checked = false
       @string = nil

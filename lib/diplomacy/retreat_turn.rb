@@ -123,7 +123,7 @@ module Diplomacy
     end
 
     def default_order(piece)
-      DisbandOrder.new(self, piece)
+      DisbandOrder.new(turn: self, piece: piece)
     end
   end
 end

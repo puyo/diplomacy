@@ -5,8 +5,8 @@ module Diplomacy
   class PieceOrder < Order
     # --- Class ------------------------------
 
-    def initialize(turn, piece)
-      super(turn)
+    def initialize(turn:, piece:)
+      super(turn: turn)
       @piece = piece
     end
 

@@ -6,13 +6,13 @@ module Diplomacy
 
     REGEXP = /^(.*) (?:h|hold|holds)$/
 
-    def initialize(turn, piece)
-      super(turn, piece)
+    def initialize(turn:, piece:)
+      super(turn: turn, piece: piece)
     end
 
     def self.parse(power, match_data, mine = true)
       piece = power.turn.parse_piece(power, match_data[1], mine)
-      HoldOrder.new(power.turn, piece)
+      new(turn: power.turn, piece: piece)
     end
 
     # --- Queries ----------------------------

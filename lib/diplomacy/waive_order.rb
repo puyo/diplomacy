@@ -6,8 +6,8 @@ module Diplomacy
 
     REGEXP = /^(?:w|waive)$/
 
-    def initialize(power)
-      super(power.turn)
+    def initialize(power:)
+      super(turn: power.turn)
       @power = power
     end
 

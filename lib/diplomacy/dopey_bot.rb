@@ -364,7 +364,7 @@ module Diplomacy
     def route_pieces(available, objectives)
       if objectives.empty? || available.empty?
         available.each do |p|
-          @orders[p] = HoldOrder.new(@turn, p)
+          @orders[p] = HoldOrder.new(turn: @turn, piece: p)
         end
         return
       end
@@ -399,10 +399,10 @@ module Diplomacy
           Util.ailog "#{nationality}: #{piece.inspect} -> #{province}"
 
           if province == piece.area.province
-            order = HoldOrder.new(@turn, piece)
+            order = HoldOrder.new(turn: @turn, piece: piece)
           else
             dest = province.areas.find { |a| piece.area.connections.include?(a) }
-            order = MoveOrder.new(@turn, piece, dest)
+            order = MoveOrder.new(turn: @turn, piece: piece, destination: dest)
           end
 
           if @failed_previous_orders[key(@turn)].to_a.include?(order.text) && rand(10) >= 8
@@ -498,14 +498,14 @@ module Diplomacy
             if !piece.area.connections.find { |c| c.province == dest }
               next
             end
-            support_order = SupportOrder.new(@turn, piece, this_moving_piece)
+            support_order = SupportOrder.new(turn: @turn, piece: piece, supported_piece: this_moving_piece)
             if !@orders_tried[piece].include?(support_order.text)
               change_order(piece, support_order)
               changed = true
             end
           end
           if !changed
-            hold_order = HoldOrder.new(@turn, piece)
+            hold_order = HoldOrder.new(turn: @turn, piece: piece)
             change_order(piece, hold_order)
           end
         end
@@ -569,8 +569,8 @@ module Diplomacy
 
     def make_convoy_order(fleet, army, destination)
       Util.ailog "#{nationality}: Making convoy order: #{fleet} C #{army} -> #{destination}"
-      fo = ConvoyOrder.new(@turn, fleet, army, destination)
-      ao = ConvoyedMoveOrder.new(@turn, army, [fleet.area], destination)
+      fo = ConvoyOrder.new(turn: @turn, piece: fleet, piece_conveyed: army, piece_destination: destination)
+      ao = ConvoyedMoveOrder.new(turn: @turn, piece: army, path: [fleet.area], destination: destination)
       unless @orders_tried[army].include?(ao.text)
         change_order(fleet, fo)
         change_order(army, ao)
@@ -694,7 +694,7 @@ module Diplomacy
           area = areas.first
           area_free = @orders.find { |a, _o| a.province == area.province }.nil?
           next if !area_free
-          @orders[area] = BuildOrder.new(@power, area)
+          @orders[area] = BuildOrder.new(power: @power, area: area)
           homes_left.delete area.province
           num -= 1
           Util.ailog "#{nationality}: Building #{build_type} in #{area}, #{num} builds left"
@@ -709,7 +709,7 @@ module Diplomacy
       worst_pieces = pieces.sort_by { |p| @area_data[p.area].value }
       num.times do
         piece = worst_pieces.shift
-        @orders[piece] = DisbandOrder.new(@turn, piece)
+        @orders[piece] = DisbandOrder.new(turn: @turn, piece: piece)
       end
     end
 

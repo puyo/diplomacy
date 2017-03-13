@@ -6,8 +6,8 @@ module Diplomacy
 
     REGEXP = /^(?:disband|d) (.*)$/
 
-    def initialize(turn, piece)
-      super(turn, piece)
+    def initialize(turn:, piece:)
+      super(turn: turn, piece: piece)
     end
 
     def self.parse(power, match_data, _mine = true)
@@ -16,7 +16,7 @@ module Diplomacy
       rescue
         piece = power.turn.parse_piece(power, match_data[1], true)
       end
-      DisbandOrder.new(power.turn, piece)
+      new(turn: power.turn, piece: piece)
     end
 
     def power

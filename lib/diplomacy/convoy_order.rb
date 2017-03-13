@@ -6,8 +6,8 @@ module Diplomacy
 
     REGEXP = /^(.*) (?:c|convoy) (.*?)-(.*)$/
 
-    def initialize(turn, piece, piece_convoyed, piece_destination)
-      super(turn, piece)
+    def initialize(turn:, piece:, piece_convoyed:, piece_destination:)
+      super(turn: turn, piece: piece)
       @piece_convoyed, @piece_destination = piece_convoyed, piece_destination
       @piece_convoyed.convoys << piece
     end
@@ -16,7 +16,7 @@ module Diplomacy
       piece = power.turn.parse_piece(power, match_data[1], mine)
       piece_convoyed = power.turn.parse_piece(power, match_data[2], false)
       piece_destination = power.turn.map.parse_area(match_data[3], piece_convoyed.type)
-      ConvoyOrder.new(power.turn, piece, piece_convoyed, piece_destination)
+      new(turn: power.turn, piece: piece, piece_convoyed: piece_convoyed, piece_destination: piece_destination)
     end
 
     # --- Queries ----------------------------

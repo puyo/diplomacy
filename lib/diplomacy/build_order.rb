@@ -6,14 +6,14 @@ module Diplomacy
 
     REGEXP = /^(?:b|build) (.*)$/
 
-    def initialize(power, area)
-      super(power.turn)
+    def initialize(power:, area:)
+      super(turn: power.turn)
       @power, @area = power, area
     end
 
     def self.parse(power, match_data, _mine = true)
       area = power.turn.map.parse_area(match_data[1])
-      BuildOrder.new(power, area)
+      new(power: power, area: area)
     end
 
     # --- Queries ----------------------------

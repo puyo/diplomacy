@@ -31,7 +31,7 @@ module Diplomacy
     end
 
     def default_order(piece)
-      HoldOrder.new(self, piece)
+      HoldOrder.new(turn: self, piece: piece)
     end
 
     def orders_template(power_definition)

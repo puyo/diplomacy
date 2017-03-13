@@ -6,9 +6,9 @@ module Diplomacy
 
     REGEXP = /^([^-]+?)(?:-(.+?))+$/
 
-    def initialize(turn, piece, path, destination)
+    def initialize(turn:, piece:, path:, destination:)
       @path = path
-      super(turn, piece, destination)
+      super(turn: turn, piece: piece, destination: destination)
     end
 
     def self.parse(power, match_data, mine = true)
@@ -16,7 +16,7 @@ module Diplomacy
       piece = power.turn.parse_piece(power, parts.shift, mine)
       destination = power.turn.map.parse_area(parts.pop, piece.type)
       path = parts.map { |p| power.turn.map.parse_area(p.strip, 'f') } # hard coding...
-      ConvoyedMoveOrder.new(power.turn, piece, path, destination)
+      new(turn: power.turn, piece: piece, path: path, destination: destination)
     end
 
     # --- Queries ----------------------------

@@ -6,8 +6,8 @@ module Diplomacy
 
     REGEXP = /^(.*) (?:s|support) (.*)/
 
-    def initialize(turn, piece, supported_piece)
-      super(turn, piece)
+    def initialize(turn:, piece:, supported_piece:)
+      super(turn: turn, piece: piece)
       @supported_piece = supported_piece
     end
 
@@ -15,7 +15,7 @@ module Diplomacy
       piece = power.turn.parse_piece(power, match_data[1], mine)
       # order = power.turn.parse_order(power, match_data[2], false)
       supported_piece = power.turn.parse_piece(power, match_data[2], false)
-      SupportOrder.new(power.turn, piece, supported_piece)
+      new(turn: power.turn, piece: piece, supported_piece: supported_piece)
     end
 
     # --- Queries ----------------------------

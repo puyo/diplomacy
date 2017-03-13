@@ -88,7 +88,7 @@ module Diplomacy
           missing = ngained - ok_orders.size
           if missing.positive?
             missing.times do
-              order = WaiveOrder.new(power)
+              order = WaiveOrder.new(power: power)
               Util.log "  #{order}"
               add_order(order)
             end
@@ -115,7 +115,7 @@ module Diplomacy
           unordered_pieces = unordered_pieces.sort_by { |dist, _piece| -dist }
           missing.times do
             dist, piece, _home = unordered_pieces.shift
-            order = DisbandOrder.new(self, piece)
+            order = DisbandOrder.new(turn: self, piece: piece)
             Util.log "  #{order} (distance from home = #{dist})"
             add_order(order)
           end

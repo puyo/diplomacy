@@ -6,15 +6,15 @@ module Diplomacy
 
     REGEXP = /^([^-]+)-([^-]+)$/
 
-    def initialize(turn, piece, destination)
-      super(turn, piece)
+    def initialize(turn:, piece:, destination:)
+      super(turn: turn, piece: piece)
       @destination = destination
     end
 
     def self.parse(power, match_data, mine)
       piece = power.turn.parse_piece(power, match_data[1], mine)
       destination = power.turn.map.parse_area(match_data[2], piece.type)
-      MoveOrder.new(power.turn, piece, destination)
+      new(turn: power.turn, piece: piece, destination: destination)
     end
 
     # --- Queries ----------------------------
