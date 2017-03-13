@@ -5,16 +5,16 @@ module Diplomacy
   class Turn
     # --- Class ------------------------------
 
-    def initialize(map, prevturn = nil)
+    def initialize(map:, previous_turn: nil)
       @game = nil
       @map = map
       @contenders = Hash.new { |h, k| h[k] = [] }
       @pieces = {}
       @pieces_dislodged = {}
-      if prevturn
-        @game = prevturn.game
-        @year = prevturn.next_year
-        @powers = prevturn.powers.map do |power|
+      if previous_turn
+        @game = previous_turn.game
+        @year = previous_turn.next_year
+        @powers = previous_turn.powers.map do |power|
           if power.pieces_all.empty?
             nil
           else

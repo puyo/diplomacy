@@ -20,10 +20,6 @@ module Diplomacy
       }.fetch(str, default)
     end
 
-    def initialize(map, prevturn = nil)
-      super(map, prevturn)
-    end
-
     # --- Queries ----------------------------
 
     def name
@@ -61,19 +57,18 @@ module Diplomacy
       orders_tally_strengths
       orders_check_bounces
 
-      # I'm sure there's a better way to do this...
       if dislodgements?
-        result = RetreatTurn.new(@map, self)
+        result = RetreatTurn.new(map: @map, previous_turn: self)
         orders_execute(result)
         result.pieces_dislodged.each do |piece|
           occupied = piece.area.connections.reject { |a| result.piece(a.province).nil? }
           piece.retreats -= occupied
         end
       else
-        result = next_season.new(@map, self)
+        result = next_season.new(map: @map, previous_turn: self)
         orders_execute(result)
         if self.class == Autumn && result.adjustments?
-          result = AdjustmentTurn.new(@map, self, result)
+          result = AdjustmentTurn.new(map: @map, previous_turn: self, next_turn: result)
           orders_execute(result)
         end
       end

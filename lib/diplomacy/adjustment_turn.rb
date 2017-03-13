@@ -5,7 +5,19 @@ require_relative './disband_order'
 
 module Diplomacy
   class AdjustmentTurn < Turn
+    # --- Class ------------------------------
+
     ORDER_TYPES = [BuildOrder, DisbandOrder].freeze
+
+    def initialize(map:, previous_turn:, next_turn:)
+      super(map: map, previous_turn: previous_turn)
+      @previous_turn = previous_turn
+      @next_turn = next_turn
+      @adjustments = next_turn.adjustments
+      @orders = Hash.new { |h, k| h[k] = [] }
+    end
+
+    # --- Queries ----------------------------
 
     def season
       'Winter'
@@ -20,19 +32,11 @@ module Diplomacy
     end
 
     def next_year
-      @nextturn.year
+      @next_turn.year
     end
 
     def year
-      @prevturn.year
-    end
-
-    def initialize(map, prevturn, nextturn)
-      super(map, prevturn)
-      @prevturn = prevturn
-      @nextturn = nextturn
-      @adjustments = nextturn.adjustments
-      @orders = Hash.new { |h, k| h[k] = [] }
+      @previous_turn.year
     end
 
     def orders(power = nil)
@@ -43,8 +47,10 @@ module Diplomacy
       end
     end
 
+    # --- Commands ---------------------------
+
     def next_turn
-      result = @nextturn
+      result = @next_turn
       orders_fill
       orders_validate
       orders_execute(result)

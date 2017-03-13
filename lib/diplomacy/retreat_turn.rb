@@ -8,19 +8,19 @@ module Diplomacy
 
     ORDER_TYPES = [RetreatOrder, DisbandOrder].freeze
 
-    def initialize(map, prevturn)
-      super(map, prevturn)
-      @prevturn = prevturn
+    def initialize(map:, previous_turn:)
+      super(map: map, previous_turn: previous_turn)
+      @previous_turn = previous_turn
     end
 
     # --- Queries ----------------------------
 
     def next_turn_type
-      @prevturn.next_season
+      @previous_turn.next_season
     end
 
     def season
-      @prevturn.season
+      @previous_turn.season
     end
 
     def name
@@ -28,29 +28,27 @@ module Diplomacy
     end
 
     def type_id
-      "#{@prevturn.type_id}r"
+      "#{@previous_turn.type_id}r"
     end
 
     def next_year
-      @prevturn.next_year
+      @previous_turn.next_year
     end
 
     def year
-      @prevturn.year
+      @previous_turn.year
     end
 
     # --- Commands ---------------------------
 
     def next_turn
-      result = next_turn_type.new(@map, self)
-
+      result = next_turn_type.new(map: @map, previous_turn: self)
       orders_fill
       orders_validate
       orders_check
       orders_execute(result)
-
-      if @prevturn.class == Autumn && result.adjustments?
-        result = AdjustmentTurn.new(@map, self, result)
+      if @previous_turn.class == Autumn && result.adjustments?
+        result = AdjustmentTurn.new(map: @map, previous_turn: self, next_turn: result)
         orders_execute(result)
       end
       result
