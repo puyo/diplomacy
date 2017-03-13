@@ -62,7 +62,7 @@ module Diplomacy
 
       uncontrolled_e = doc.elements['/map/uncontrolled']
       colours = uncontrolled_e.attribute('colours').to_s.split(/,/)
-      @uncontrolled = Uncontrolled.new(colours)
+      @uncontrolled = Uncontrolled.new(colours: colours)
       @power_definitions << @uncontrolled
       @uncontrolled_start = Turn::Power.new(@first_turn, @uncontrolled)
       @first_turn.add_power @uncontrolled_start

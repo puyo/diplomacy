@@ -55,7 +55,7 @@ module Diplomacy
 
   # Dummy power representing an uncontrolled area.
   class Uncontrolled < Power
-    def initialize(colours)
+    def initialize(colours:)
       super(name: 'Uncontrolled', adjectives: ['Uncontrolled'], colours: colours)
       @player = nil
     end
