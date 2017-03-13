@@ -6,7 +6,7 @@ module Diplomacy
     # --- Class ------------------------------
 
     # Create a province.
-    def initialize(map, id, name, supply, start_owner)
+    def initialize(map:, id:, name:, supply:, start_owner:)
       @map, @id, @name, @supply = map, id, name, supply
       @areas = {}
       @start_owner = start_owner

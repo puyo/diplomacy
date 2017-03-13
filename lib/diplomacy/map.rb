@@ -233,7 +233,7 @@ module Diplomacy
       name = element.attribute('name').to_s
       supply = element.elements['supply']
       supply &&= supply.attribute('pos').to_s.split(/,/).map(&:to_i)
-      province = Province.new(self, id, name, supply, owner.definition)
+      province = Province.new(map: self, id: id, name: name, supply: supply, start_owner: owner.definition)
       @provinces[id.downcase] = province
       element.elements.each('area') do |e|
         input_area(province, e)
