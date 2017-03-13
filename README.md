@@ -16,7 +16,7 @@ I'd like to hammer it into shape which involves the following steps:
 - [ ] Add more unit tests as necessary for coverage and sanity
 - [ ] Probably retire the FXRuby GUI I wrote but leave it there for now
 - [ ] Refactor lots of if statements, mostly by limiting possible values for data
-  - [ ] Switch the initializers to use keyword arguments
+  - [x] Switch the initializers to use keyword arguments
   - [ ] Use dry-initializer to ensure objects get initialized sanely
   - [ ] Pull REXML code out of Map and rewrite it
 - [ ] Dependency-inject stuff (e.g. loggers to avoid `log` and `ailog` calls
