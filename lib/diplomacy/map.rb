@@ -51,7 +51,7 @@ module Diplomacy
         power_def = Power.new(name: name, adjectives: adjectives, colours: colours)
         @power_definitions << power_def
 
-        turn_power = Turn::Power.new(@first_turn, power_def)
+        turn_power = Turn::Power.new(turn: @first_turn, definition: power_def)
         @first_turn.add_power turn_power
 
         power_elem.elements.each('province') do |province|
@@ -64,7 +64,7 @@ module Diplomacy
       colours = uncontrolled_e.attribute('colours').to_s.split(/,/)
       @uncontrolled = Uncontrolled.new(colours: colours)
       @power_definitions << @uncontrolled
-      @uncontrolled_start = Turn::Power.new(@first_turn, @uncontrolled)
+      @uncontrolled_start = Turn::Power.new(turn: @first_turn, definition: @uncontrolled)
       @first_turn.add_power @uncontrolled_start
       uncontrolled_e.elements.each('province') do |uncontrolled_province|
         input_province(@uncontrolled_start, uncontrolled_province)

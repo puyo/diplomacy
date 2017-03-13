@@ -4,7 +4,7 @@ module Diplomacy
     class Power
       # --- Class ------------------------------
 
-      def initialize(turn, definition, provinces = [], pieces = [], pieces_dislodged = [])
+      def initialize(turn:, definition:, provinces: [], pieces: [], pieces_dislodged: [])
         @turn = turn
         @definition, @pieces, @provinces = definition, pieces, provinces
         @pieces_dislodged = pieces_dislodged

@@ -18,7 +18,7 @@ module Diplomacy
           if power.pieces_all.empty?
             nil
           else
-            newpower = Turn::Power.new(self, power.definition)
+            newpower = Turn::Power.new(turn: self, definition: power.definition)
             power.provinces.each do |p|
               newpower.add_province(p)
             end
