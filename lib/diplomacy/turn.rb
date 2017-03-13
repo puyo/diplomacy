@@ -342,7 +342,7 @@ module Diplomacy
     end
 
     def build_piece(owner, area)
-      piece = Piece.new(self, area.type, owner, area)
+      piece = Piece.new(turn: self, type: area.type, owner: owner, area: area)
       add_piece(piece)
       piece
     end
@@ -351,10 +351,10 @@ module Diplomacy
       build_piece(owner, @map.parse_area(text))
     end
 
-    def copy_piece_to(piece, area = nil)
+    def copy_piece_to(piece, area)
       area ||= piece.area
       owner = power(piece.owner.definition)
-      piece = Piece.new(self, piece.type, owner, area, piece.identifier)
+      piece = Piece.new(turn: self, type: piece.type, owner: owner, area: area, identifier: piece.identifier)
       Util.log "Adding piece #{piece} to turn #{self}..."
       add_piece(piece)
       if area.province.supply? && (is_a?(@map.first_season) || is_a?(AdjustmentTurn))
@@ -364,7 +364,7 @@ module Diplomacy
 
     def copy_piece_dislodged(piece, area)
       owner = power(piece.owner.definition)
-      newpiece = Piece.new(self, piece.type, owner, area, piece.identifier)
+      newpiece = Piece.new(turn: self, type: piece.type, owner: owner, area: area, identifier: piece.identifier)
       newpiece.retreats.replace(piece.retreats)
       Util.log "Adding dislodged piece #{newpiece} to turn #{self}..."
       add_piece_dislodged(newpiece)

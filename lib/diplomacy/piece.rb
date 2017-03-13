@@ -14,7 +14,7 @@ module Diplomacy
         include Comparable
       end
 
-      def initialize(turn, type, owner, area, identifier = ID.new)
+      def initialize(turn:, type:, owner:, area:, identifier: ID.new)
         @turn = turn
         @type, @owner, @area = type, owner, area
         @supports = []
