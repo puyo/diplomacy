@@ -12,7 +12,7 @@ module Diplomacy
     ENMITY_RANGE = 0.01..0.99
     FEAR_RATE = 0.2
 
-    def initialize(game, human_nationality)
+    def initialize(game:, human_nationality:)
       @turn = game.map.first_turn
       @game = game
       @nationality = nationalities.find { |n| n == human_nationality }

@@ -85,7 +85,7 @@ module Diplomacy
     def start_director
       human_power = turn.powers.find { |p| p.definition.player.is_a?(Human) }
       if director_mode && !human_power.nil?
-        @director = Director.new(self, human_power.definition)
+        @director = Director.new(game: self, human_nationality: human_power.definition)
       end
     end
 
