@@ -48,7 +48,7 @@ module Diplomacy
         name = power_elem.attribute('name').to_s
         adjectives = power_elem.attribute('adjectives').to_s.split(/,/)
         colours = power_elem.attribute('colours').to_s.split(/,/)
-        power_def = Power.new(name, adjectives, colours)
+        power_def = Power.new(name: name, adjectives: adjectives, colours: colours)
         @power_definitions << power_def
 
         turn_power = Turn::Power.new(@first_turn, power_def)

@@ -9,7 +9,7 @@ module Diplomacy
     # --- Class ------------------------------
 
     # Create a power.
-    def initialize(name, adjectives, colours)
+    def initialize(name:, adjectives:, colours:)
       @name, @adjectives = name, adjectives
       @province_colour = RGB.new(colours[0])
       @resource_colour = RGB.new(colours[1])
@@ -56,7 +56,7 @@ module Diplomacy
   # Dummy power representing an uncontrolled area.
   class Uncontrolled < Power
     def initialize(colours)
-      super('Uncontrolled', 'Uncontrolled', colours)
+      super(name: 'Uncontrolled', adjectives: ['Uncontrolled'], colours: colours)
       @player = nil
     end
   end
