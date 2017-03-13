@@ -258,7 +258,14 @@ module Diplomacy
         raise Error, "Area '#{id}' in province '#{province.id}' (#{type}) must have attribute 'pos' with coordinates for placing a piece and floodfilling."
       end
       area_name = element.attribute('name').to_s
-      area = Area.new(type, id, area_name, province, connections, coordinates)
+      area = Area.new(
+        type: type,
+        id: id,
+        name: area_name,
+        province: province,
+        connections: connections,
+        coordinates: coordinates
+      )
       province.add_area(area)
     end
   end

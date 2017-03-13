@@ -11,7 +11,7 @@ module Diplomacy
     # --- Class ------------------------------
 
     # Create a new area.
-    def initialize(type, id, name, province, connections, coordinates)
+    def initialize(type:, id:, name:, province:, connections:, coordinates:)
       @type, @id, @name, @province, @connections, @coordinates = type, id, name, province, connections, coordinates
     end
 
